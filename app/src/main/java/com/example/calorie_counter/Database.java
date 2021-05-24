@@ -5,10 +5,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.util.Date;
 public class Database extends SQLiteOpenHelper {
-    private static String databaseName = "CalorieDB";
+    private static String databaseName = "CalorieDB1";
 
     SQLiteDatabase calorieDatabase;
 
@@ -76,6 +77,18 @@ public class Database extends SQLiteOpenHelper {
         calorieDatabase.insert("user_meals",null,row);
         calorieDatabase.close();
     }
+    public void add_meal_mirror(String id,String meal, Date d,double quantity,double cal)
+    {
+        ContentValues row = new ContentValues();
+        row.put("user_id",id);
+        row.put("meal",meal);
+        row.put("date", String.valueOf(d));
+        row.put("quantity",quantity);
+        row.put("calories",cal);
+        calorieDatabase = getWritableDatabase();
+        calorieDatabase.insert("user_meals",null,row);
+        calorieDatabase.close();
+    }
     public Cursor getUserMeals(String email){
         String id = this.get_user_id(email)+"";
         calorieDatabase = getReadableDatabase();
@@ -85,5 +98,27 @@ public class Database extends SQLiteOpenHelper {
             meals.moveToFirst();
         calorieDatabase.close();
         return meals;
+    }
+    public Cursor getUserMeals_mirro(String userid){
+        String id = userid;
+        calorieDatabase = getReadableDatabase();
+        String[] rowDetails = {id};
+        Cursor meals=calorieDatabase.rawQuery("select meal,date,quantity,calories from user_meals where user_id like ?",rowDetails);
+        if (meals != null)
+            meals.moveToFirst();
+        calorieDatabase.close();
+        return meals;
+    }
+
+    public int signIn(String emailIn , String passwordIn){
+        emailIn = "adham@gmail.com";
+        passwordIn = "121313";
+        String [] rowDetails = {emailIn,passwordIn};
+        calorieDatabase = getReadableDatabase();
+        Cursor id = calorieDatabase.rawQuery("select id from users where email like ? and password like ?",rowDetails);
+        if (id != null)
+            id.moveToFirst();
+        calorieDatabase.close();
+        return id.getInt(0);
     }
 }
