@@ -22,6 +22,8 @@ public class Database extends SQLiteOpenHelper {
                 ", age integer , height real, weight real , gender text , daily_intake integer )");
         db.execSQL("create table user_meals(user_id integer , meal text , date Date,quantity real, calories real," +
                 "PRIMARY KEY(user_id,meal,date),CONSTRAINT fk_col FOREIGN KEY(user_id) REFERENCES users(id))");
+        db.execSQL("create table user_lists(user_id integer , list_id integer not null , item text , quantity real," +
+                "PRIMARY KEY(user_id,list_id), CONSTRAINT fk_col FOREIGN KEY(user_id) REFERENCES users(id))");
     }
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
