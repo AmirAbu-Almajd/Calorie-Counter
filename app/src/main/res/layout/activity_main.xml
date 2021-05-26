@@ -13,12 +13,18 @@
         tools:layout_editor_absoluteX="110dp"
         tools:layout_editor_absoluteY="230dp">
 
+        <AutoCompleteTextView
+            android:id="@+id/apiTxt"
+            android:hint="Item"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
         <EditText
             android:id="@+id/nametxt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
             android:hint="Name"
+            android:ems="10"
             android:inputType="textPersonName" />
 
         <EditText
