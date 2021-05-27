@@ -2,6 +2,7 @@ package com.example.calorie_counter;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -47,6 +48,8 @@ public class registerationMenu extends AppCompatActivity {
                 Log.e("Calories : ", calorie_calculation+"");
                 db.createUser(nametxt.getText().toString(), emailtxt.getText().toString(), passwordtxt.getText().toString(),
                         age, height, weight, genderBtn.getText().toString(), calorie_calculation);
+                Intent i = new Intent(registerationMenu.this,mainTabs.class);
+                startActivity(i);
             }
         });
 

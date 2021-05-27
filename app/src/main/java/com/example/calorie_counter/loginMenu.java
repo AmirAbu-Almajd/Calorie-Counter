@@ -44,6 +44,8 @@ public class loginMenu extends AppCompatActivity {
             public void onClick(View v) {
                 int id = db.signIn(emailtxt.getText().toString(),password.getText().toString());
                 Toast.makeText(getApplicationContext(),id+"",Toast.LENGTH_LONG).show();
+                Intent i = new Intent(loginMenu.this,mainTabs.class);
+                startActivity(i);
             }
         });
         registerBtn.setOnClickListener(new View.OnClickListener() {
