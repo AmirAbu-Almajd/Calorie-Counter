@@ -1,12 +1,18 @@
 package com.example.calorie_counter;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -23,7 +29,8 @@ public class ShoppingListFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
+    public static UserLists userLists;
+    static ArrayAdapter<String> listAdapter;
     public ShoppingListFragment() {
         // Required empty public constructor
     }
@@ -60,6 +67,30 @@ public class ShoppingListFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView=inflater.inflate(R.layout.fragment_shopping_list, container, false);
+        userLists = new UserLists();
+        ListView shoppingLists = (ListView)rootView.findViewById(R.id.groceryListView);
+        listAdapter = new ArrayAdapter<String>(rootView.getContext(), android.R.layout.simple_list_item_1);
+        shoppingLists.setAdapter(listAdapter);
+        fillMyLists();
+        FloatingActionButton newListBtn = (FloatingActionButton)rootView.findViewById(R.id.newListBtn);
+        newListBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(rootView.getContext(),ShoppingItems.class);
+                startActivity(i);
+            }
+        });
+
         return rootView;
+    }
+    public void fillMyLists(){
+        for(int i =0;i<userLists.lists.size();i++){
+            GroceryList list = userLists.lists.get(i);
+            for(int j = 0 ; j < list.items.size();i++){
+                if(list.quantities.get(j)!=0)
+                    listAdapter.add(list.items.get(j) + " " + list.quantities.get(j).toString() + " KGs\n");
+            }
+        }
+        listAdapter.notifyDataSetChanged();
     }
 }

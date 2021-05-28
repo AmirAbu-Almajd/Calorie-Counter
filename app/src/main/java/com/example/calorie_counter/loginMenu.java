@@ -43,8 +43,9 @@ public class loginMenu extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 int id = db.signIn(emailtxt.getText().toString(),password.getText().toString());
-                Toast.makeText(getApplicationContext(),id+"",Toast.LENGTH_LONG).show();
+//                Toast.makeText(getApplicationContext(),id+"",Toast.LENGTH_LONG).show();
                 Intent i = new Intent(loginMenu.this,mainTabs.class);
+                i.putExtra("user_id",id);
                 startActivity(i);
             }
         });

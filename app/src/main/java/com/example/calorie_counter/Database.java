@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.util.Date;
+import java.util.List;
+
 public class Database extends SQLiteOpenHelper {
     private static String databaseName = "CalorieDB1";
 
@@ -81,7 +83,9 @@ public class Database extends SQLiteOpenHelper {
         calorieDatabase.insert("user_meals",null,row);
         calorieDatabase.close();
     }
-
+    public void add_grocery_list(int user_id , List<String> items , List<Double> quantities){
+        ContentValues row = new ContentValues();
+    }
     public Cursor getUserMeals(String email){
         String id = this.get_user_id(email)+"";
         calorieDatabase = getReadableDatabase();
