@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 
 import android.os.Parcelable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -29,8 +33,10 @@ public class ShoppingListFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    public static UserLists userLists;
+
+    public static List<GroceryList> lists = new LinkedList<>();
     static ArrayAdapter<String> listAdapter;
+
     public ShoppingListFragment() {
         // Required empty public constructor
     }
@@ -66,30 +72,38 @@ public class ShoppingListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView=inflater.inflate(R.layout.fragment_shopping_list, container, false);
-        userLists = new UserLists();
-        ListView shoppingLists = (ListView)rootView.findViewById(R.id.groceryListView);
+        View rootView = inflater.inflate(R.layout.fragment_shopping_list, container, false);
+
+        ListView shoppingLists = (ListView) rootView.findViewById(R.id.groceryListView);
         listAdapter = new ArrayAdapter<String>(rootView.getContext(), android.R.layout.simple_list_item_1);
         shoppingLists.setAdapter(listAdapter);
         fillMyLists();
-        FloatingActionButton newListBtn = (FloatingActionButton)rootView.findViewById(R.id.newListBtn);
+        FloatingActionButton newListBtn = (FloatingActionButton) rootView.findViewById(R.id.newListBtn);
         newListBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(rootView.getContext(),ShoppingItems.class);
+                Intent i = new Intent(rootView.getContext(), ShoppingItems.class);
                 startActivity(i);
             }
         });
 
         return rootView;
     }
-    public void fillMyLists(){
-        for(int i =0;i<userLists.lists.size();i++){
-            GroceryList list = userLists.lists.get(i);
-            for(int j = 0 ; j < list.items.size();i++){
-                if(list.quantities.get(j)!=0)
-                    listAdapter.add(list.items.get(j) + " " + list.quantities.get(j).toString() + " KGs\n");
+
+    public void fillMyLists() {
+        for (int i = 0; i < lists.size(); i++) {
+            String res = "";
+            GroceryList list = lists.get(i);
+            for (int j = 0; j < list.items.size(); j++) {
+                Log.e("Kam marra ", j + "");
+                if (list.quantities.get(j) != 0.0) {
+//                    Log.e("Print", list.items.get(j));
+                    res+=list.items.get(j) + " " + list.quantities.get(j).toString() + " KGs";
+                    if(j!= list.items.size()-1)
+                        res+="\n";
+                }
             }
+            listAdapter.add(res);
         }
         listAdapter.notifyDataSetChanged();
     }
