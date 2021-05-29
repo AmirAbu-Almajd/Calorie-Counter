@@ -6,6 +6,7 @@ import androidx.viewpager.widget.ViewPager;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -17,7 +18,9 @@ import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 
-public class ShoppingItems extends AppCompatActivity {
+public class ShoppingItems extends AppCompatActivity implements BottomSheetDialog.BottomSheetListener {
+    String tempText = "";
+    GroceryList newList = new GroceryList();
     int image[] = {
             R.mipmap.blueberry_icon_foreground,
             R.mipmap.apple_icon_foreground,
@@ -32,7 +35,20 @@ public class ShoppingItems extends AppCompatActivity {
             R.mipmap.celery_icon_foreground,
             R.mipmap.cherry_icon_foreground,
             R.mipmap.chives_icon_foreground,
-            R.mipmap.corn_icon_foreground,};
+            R.mipmap.corn_icon_foreground,
+            R.mipmap.cucumber_icon_foreground,
+            R.mipmap.eggplant_icon_foreground,
+            R.mipmap.garlic_icon_foreground,
+            R.mipmap.green_beans_icon_foreground,
+            R.mipmap.jelapeno_icon_foreground,
+            R.mipmap.lettuce_icon_foreground,
+            R.mipmap.mushroom_icon_foreground,
+            R.mipmap.onion_icon_foreground,
+            R.mipmap.orange_icon_foreground,
+            R.mipmap.pepper_icon_foreground,
+            R.mipmap.pumpkin_icon_foreground,
+            R.mipmap.tomato_icon_foreground,
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,15 +63,24 @@ public class ShoppingItems extends AppCompatActivity {
         }
         imageAdapter adapter = new imageAdapter(getApplicationContext(), arrayList);
         itemsGrid.setAdapter(adapter);
-        GroceryList newList = new GroceryList();
+
         itemsGrid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 ItemsList itemsList = new ItemsList();
                 String text = itemsList.items.get(position);
                 newList.add(text);
-//                newList.show();
-//                Toast.makeText(getApplicationContext(),text,Toast.LENGTH_SHORT).show();
+            }
+        });
+        itemsGrid.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                ItemsList itemsList = new ItemsList();
+                String text = itemsList.items.get(position);
+                tempText=text;
+                BottomSheetDialog bottomSheet = new BottomSheetDialog();
+                bottomSheet.show(getSupportFragmentManager(),"BottomSheet");
+                return false;
             }
         });
         FloatingActionButton addListBtn = (FloatingActionButton)findViewById(R.id.addListBtn);
@@ -63,6 +88,7 @@ public class ShoppingItems extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 ShoppingListFragment.lists.add(newList);
+
                 Intent intent = new Intent(ShoppingItems.this, mainTabs.class);
                 int page = 2;
                 intent .putExtra("One",page);
@@ -72,5 +98,10 @@ public class ShoppingItems extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    public void onButtonClicked(String text) {
+        newList.set(tempText,Double.parseDouble(text));
     }
 }

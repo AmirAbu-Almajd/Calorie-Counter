@@ -10,6 +10,7 @@
         android:layout_height="match_parent"
         android:layout_rowWeight="2"
         android:layout_margin="0.5dp"
+        android:drawSelectorOnTop="true"
         android:layout_width="match_parent"
         android:scaleType="fitXY"
         />

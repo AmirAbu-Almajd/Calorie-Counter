@@ -20,5 +20,17 @@ public class ItemsList {
         items.add("Cherry");
         items.add("Chives");
         items.add("Corn");
+        items.add("Cucumber");
+        items.add("Eggplant");
+        items.add("Garlic");
+        items.add("Green Beans");
+        items.add("Jelapeno");
+        items.add("Lettuce");
+        items.add("Mushroom");
+        items.add("Onion");
+        items.add("Orange");
+        items.add("Pepper");
+        items.add("Pumpkin");
+        items.add("Tomato");
     }
 }
