@@ -1,6 +1,7 @@
 package com.example.calorie_counter;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
 import android.os.Bundle;
@@ -28,5 +29,6 @@ public class mainTabs extends AppCompatActivity {
         viewPager.setCurrentItem(page);
         TabLayout tabLayout=(TabLayout)findViewById(R.id.TabLayout1);
         tabLayout.setupWithViewPager(viewPager);
+
     }
 }

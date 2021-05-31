@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class SimpleFragmentPagerAdapter extends FragmentPagerAdapter {
 
+
     public SimpleFragmentPagerAdapter(FragmentManager fm)
     {
         super(fm);
@@ -33,6 +34,7 @@ public class SimpleFragmentPagerAdapter extends FragmentPagerAdapter {
         return 2;
     }
 
+
     @Nullable
     @org.jetbrains.annotations.Nullable
     @Override
@@ -46,4 +48,5 @@ public class SimpleFragmentPagerAdapter extends FragmentPagerAdapter {
         }
         return super.getPageTitle(position);
     }
+
 }

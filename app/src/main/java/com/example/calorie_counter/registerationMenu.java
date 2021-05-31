@@ -48,6 +48,8 @@ public class registerationMenu extends AppCompatActivity {
                 Log.e("Calories : ", calorie_calculation+"");
                 db.createUser(nametxt.getText().toString(), emailtxt.getText().toString(), passwordtxt.getText().toString(),
                         age, height, weight, genderBtn.getText().toString(), calorie_calculation);
+                int id = db.get_user_id(emailtxt.getText().toString());
+                userSingleton.setId(id);
                 Intent i = new Intent(registerationMenu.this,mainTabs.class);
                 startActivity(i);
             }

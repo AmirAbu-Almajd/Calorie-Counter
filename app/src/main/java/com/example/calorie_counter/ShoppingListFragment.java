@@ -1,6 +1,7 @@
 package com.example.calorie_counter;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -24,7 +25,6 @@ import java.util.List;
  * create an instance of this fragment.
  */
 public class ShoppingListFragment extends Fragment {
-
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -34,7 +34,8 @@ public class ShoppingListFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public static List<GroceryList> lists = new LinkedList<>();
+    //    public static List<GroceryList> lists = new LinkedList<>();
+    int id;
     static ArrayAdapter<String> listAdapter;
 
     public ShoppingListFragment() {
@@ -73,7 +74,7 @@ public class ShoppingListFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_shopping_list, container, false);
-
+        id = userSingleton.getId();
         ListView shoppingLists = (ListView) rootView.findViewById(R.id.groceryListView);
         listAdapter = new ArrayAdapter<String>(rootView.getContext(), android.R.layout.simple_list_item_1);
         shoppingLists.setAdapter(listAdapter);
@@ -83,6 +84,7 @@ public class ShoppingListFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(rootView.getContext(), ShoppingItems.class);
+                i.putExtra("user_id", id);
                 startActivity(i);
             }
         });
@@ -91,17 +93,20 @@ public class ShoppingListFragment extends Fragment {
     }
 
     public void fillMyLists() {
-        for (int i = 0; i < lists.size(); i++) {
+        Database db = new Database(this.getContext());
+        List<Cursor> userLists = db.get_user_lists(id);
+        for (int i = 0; i < userLists.size(); i++) {
             String res = "";
-            GroceryList list = lists.get(i);
-            for (int j = 0; j < list.items.size(); j++) {
-                Log.e("Kam marra ", j + "");
-                if (list.quantities.get(j) != 0.0) {
-//                    Log.e("Print", list.items.get(j));
-                    res+=list.items.get(j) + " " + list.quantities.get(j).toString() + " KGs";
-                    if(j!= list.items.size()-1)
-                        res+="\n";
+            Cursor list = userLists.get(i);
+            list.moveToFirst();
+            while (!list.isAfterLast()) {
+                res += list.getString(0) + " ";
+                res += list.getDouble(1);
+                if (!list.isLast()) {
+                    res += "\n";
                 }
+
+                list.moveToNext();
             }
             listAdapter.add(res);
         }

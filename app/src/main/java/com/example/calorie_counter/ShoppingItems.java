@@ -20,6 +20,8 @@ import java.util.ArrayList;
 
 public class ShoppingItems extends AppCompatActivity implements BottomSheetDialog.BottomSheetListener {
     String tempText = "";
+    int id;
+    Database db = new Database(this);
     GroceryList newList = new GroceryList();
     int image[] = {
             R.mipmap.blueberry_icon_foreground,
@@ -53,6 +55,7 @@ public class ShoppingItems extends AppCompatActivity implements BottomSheetDialo
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shopping_items);
+        id = userSingleton.getId();
         GridView itemsGrid = (GridView) findViewById(R.id.itemsGrid);
         int color = 0xFFFFFF;
         ArrayList<imageModel> arrayList = new ArrayList<>();
@@ -69,7 +72,8 @@ public class ShoppingItems extends AppCompatActivity implements BottomSheetDialo
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 ItemsList itemsList = new ItemsList();
                 String text = itemsList.items.get(position);
-                newList.add(text);
+                Double currentAmount = newList.add(text);
+                Toast.makeText(getApplicationContext(),text +" "+ currentAmount.toString() + " KGs",Toast.LENGTH_LONG).show();
             }
         });
         itemsGrid.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -87,8 +91,7 @@ public class ShoppingItems extends AppCompatActivity implements BottomSheetDialo
         addListBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ShoppingListFragment.lists.add(newList);
-
+                db.add_grocery_list(id,newList.items,newList.quantities);
                 Intent intent = new Intent(ShoppingItems.this, mainTabs.class);
                 int page = 2;
                 intent .putExtra("One",page);
@@ -102,6 +105,9 @@ public class ShoppingItems extends AppCompatActivity implements BottomSheetDialo
 
     @Override
     public void onButtonClicked(String text) {
-        newList.set(tempText,Double.parseDouble(text));
+
+        Double currentAmount = newList.set(tempText,Double.parseDouble(text));
+        Toast.makeText(getApplicationContext(),tempText +" "+ currentAmount.toString() + " KGs",Toast.LENGTH_LONG).show();
+
     }
 }
