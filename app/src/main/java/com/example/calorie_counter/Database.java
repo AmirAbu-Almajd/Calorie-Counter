@@ -12,7 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Database extends SQLiteOpenHelper {
-    private static String databaseName = "CalorieDB5";
+    private static String databaseName = "CalorieDB7";
 
     SQLiteDatabase calorieDatabase;
 
@@ -77,9 +77,9 @@ public class Database extends SQLiteOpenHelper {
 
     }
 
-    public void add_meal(String email, String meal, Date d, double quantity, double cal) {
+    public void add_meal(int id, String meal, Date d, double quantity, double cal) {
         ContentValues row = new ContentValues();
-        row.put("user_id", this.get_user_id(email));
+        row.put("user_id", id);
         row.put("meal", meal);
         row.put("date", String.valueOf(d));
         row.put("quantity", quantity);
@@ -157,5 +157,77 @@ public class Database extends SQLiteOpenHelper {
             id.moveToFirst();
         calorieDatabase.close();
         return id.getInt(0);
+    }
+
+    public int get_daily_intake(int id_in)
+    {
+        String id = id_in + "";
+        calorieDatabase = getReadableDatabase();
+        String[] rowDetails = {id};
+        Cursor u_daily_intake = calorieDatabase.rawQuery("select daily_intake from users where id like ?", rowDetails);
+        u_daily_intake.moveToFirst();
+        calorieDatabase.close();
+        return u_daily_intake.getInt(0);
+    }
+
+    public int get_calories_consumed(int id_in,Date date_in)
+    {
+        int calories=0;
+        String id = id_in + "";
+        String date = date_in + "";
+        calorieDatabase = getReadableDatabase();
+        String[] rowDetails = {id,date};
+        Cursor meals = calorieDatabase.rawQuery("select calories from user_meals where user_id like ? and date like ?", rowDetails);
+        meals.moveToFirst();
+        if (meals != null)
+        {
+            meals.moveToFirst();
+            while (!meals.isAfterLast()) {
+                calories+=Integer.parseInt(meals.getString(0));
+                meals.moveToNext();
+            }
+        }
+        calorieDatabase.close();
+        return calories;
+    }
+
+    public void update_profile(int id_in,String name, String email, String password, int age, double height,
+                               double weight,String gender)
+    {
+        String id = id_in + "";
+        Double daily_intake=userSingleton.cal_dailyIntake(weight,height,gender,age);
+        ContentValues row = new ContentValues();
+        row.put("name", name);
+        row.put("email", email);
+        row.put("password", password);
+        row.put("age", age);
+        row.put("height", height);
+        row.put("weight", weight);
+        row.put("daily_intake", daily_intake);
+        calorieDatabase = getWritableDatabase();
+        calorieDatabase.update("users",row,"id like ?",new String[]{id});
+        calorieDatabase.close();
+    }
+
+    public Cursor get_user_info(int id)
+    {
+        calorieDatabase = getReadableDatabase();
+        Cursor cursor = calorieDatabase.rawQuery("select name,email,password,age,height,weight,gender from users where id like ? ",new String[]{id+""});
+        if (cursor != null)
+            cursor.moveToFirst();
+        calorieDatabase.close();
+        return cursor;
+    }
+
+    public Cursor getTodayMeals(int id_in ,Date date_in) {
+        String id =id_in + "";
+        String date = date_in + "";
+        calorieDatabase = getReadableDatabase();
+        String[] rowDetails = {id,date};
+        Cursor meals = calorieDatabase.rawQuery("select meal,quantity,calories from user_meals where user_id like ? and date like ?", rowDetails);
+        if (meals != null)
+            meals.moveToFirst();
+        calorieDatabase.close();
+        return meals;
     }
 }

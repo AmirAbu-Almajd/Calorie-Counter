@@ -46,6 +46,7 @@ public class loginMenu extends AppCompatActivity {
                 userSingleton.setId(id);
 //                Toast.makeText(getApplicationContext(),id+"",Toast.LENGTH_LONG).show();
                 Intent i = new Intent(loginMenu.this,mainTabs.class);
+
                 startActivity(i);
             }
         });

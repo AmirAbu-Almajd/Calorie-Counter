@@ -42,7 +42,7 @@ public class SimpleFragmentPagerAdapter extends FragmentPagerAdapter {
         switch (position)
         {
             case 0:
-                return "MainMenu";
+                return "Home";
             case 1:
                 return "ShoppingLists";
         }
