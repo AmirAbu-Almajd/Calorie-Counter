@@ -101,7 +101,7 @@ public class ShoppingListFragment extends Fragment {
             list.moveToFirst();
             while (!list.isAfterLast()) {
                 res += list.getString(0) + " ";
-                res += list.getDouble(1);
+                res += list.getDouble(1) + " KGs";
                 if (!list.isLast()) {
                     res += "\n";
                 }

@@ -7,13 +7,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
 public class Database extends SQLiteOpenHelper {
-    private static String databaseName = "CalorieDB7";
-
+    private static String databaseName = "CalorieDB8";
     SQLiteDatabase calorieDatabase;
 
     public Database(Context context) {
@@ -31,13 +31,16 @@ public class Database extends SQLiteOpenHelper {
                 ", CONSTRAINT fk_col FOREIGN KEY(list_id) REFERENCES user_lists_ids(list_id))");
         db.execSQL("create table user_lists_ids(user_id integer , list_id integer, PRIMARY KEY(user_id,list_id)," +
                 "CONSTRAINT fk_col FOREIGN KEY(user_id) REFERENCES users(id))");
+        db.execSQL("create table user_weights(user_id integer not null , weight real , date Date )");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("drop table if exists users");
         db.execSQL("drop table if exists user_meals");
-        db.execSQL("drop table if exists user_lists");
+        db.execSQL("drop table if exists lists_items");
+        db.execSQL("drop table if exists user_lists_ids");
+        db.execSQL("drop table if exists user_weights");
         onCreate(db);
     }
 
@@ -229,5 +232,33 @@ public class Database extends SQLiteOpenHelper {
             meals.moveToFirst();
         calorieDatabase.close();
         return meals;
+    }
+
+    public void update_weight(int id_in,double newWeight)
+    {
+        String id =id_in + "";
+        Date c = Calendar.getInstance().getTime();
+        ContentValues row = new ContentValues();
+        row.put("user_id", id);
+        row.put("date", c.toString());
+        row.put("weight", newWeight);
+        calorieDatabase = getWritableDatabase();
+        calorieDatabase.insert("user_weights", null, row);
+        ContentValues row2 = new ContentValues();
+        row2.put("weight", newWeight);
+        calorieDatabase.update("users",row2,"id like ?",new String[]{id});
+        calorieDatabase.close();
+    }
+
+    public Cursor get_user_weights(int id_in){
+
+        String id =id_in + "";
+        calorieDatabase = getReadableDatabase();
+        String[] rowDetails = {id};
+        Cursor weights = calorieDatabase.rawQuery("select weight,date from user_weights where user_id like ? ", rowDetails);
+        if (weights != null)
+            weights.moveToFirst();
+        calorieDatabase.close();
+        return weights;
     }
 }

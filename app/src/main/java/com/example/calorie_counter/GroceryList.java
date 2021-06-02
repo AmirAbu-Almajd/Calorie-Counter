@@ -8,8 +8,6 @@ import java.util.List;
 public class GroceryList {
     List<String> items = new LinkedList<>();
     List<Double> quantities = new LinkedList<>();
-    GroceryList(){
-    }
     public Double add(String itemName){
         if(items.isEmpty()){
             items.add(itemName);

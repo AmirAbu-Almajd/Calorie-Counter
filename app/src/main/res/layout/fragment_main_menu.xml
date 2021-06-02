@@ -6,56 +6,92 @@
     android:layout_height="match_parent"
     tools:context=".MainMenuFragment">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/date_txt"
+                    android:layout_width="90dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Date"
+                    android:textSize="16dp" />
+
+                <ImageButton
+                    android:id="@+id/profile_btn"
+                    android:layout_width="60dp"
+                    android:layout_height="50dp"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    tools:src="@drawable/profile_icon" />
+            </LinearLayout>
 
             <TextView
-                android:id="@+id/date_txt"
-                android:layout_width="90dp"
-                android:textSize="16dp"
+                android:id="@+id/textView2"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Date" />
+                android:text="calories consumed + calories remaining = goal"
+                android:textSize="17dp" />
 
-            <ImageButton
-                android:id="@+id/profile_btn"
-                android:layout_width="60dp"
-                android:layout_height="50dp"
-                android:scaleType="fitCenter"
-                android:adjustViewBounds="true"
-                tools:src="@drawable/profile_icon" />
+            <TextView
+                android:id="@+id/caloriesEqu_txt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="20dp" />
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Meals of today" />
+
+            <ListView
+                android:id="@+id/meals_listview"
+                android:layout_width="match_parent"
+                android:layout_height="212dp" />
+
+            <com.jjoe64.graphview.GraphView
+                android:id="@+id/weightGraph"
+                android:layout_width="match_parent"
+                android:layout_height="285dp"></com.jjoe64.graphview.GraphView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="74dp"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/newWeightTxt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:hint="Update your weight"
+                    android:inputType="textPersonName" />
+
+                <Button
+                    android:id="@+id/updateBtnGraph"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:text="Update"
+                    app:backgroundTint="#FFA722" />
+            </LinearLayout>
         </LinearLayout>
+    </ScrollView>
 
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="17dp"
-            android:text="calories consumed + calories remaining = goal" />
-
-        <TextView
-            android:id="@+id/caloriesEqu_txt"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="20dp"
-            android:text="" />
-
-        <TextView
-            android:id="@+id/textView3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Meals of today" />
-
-        <ListView
-            android:id="@+id/meals_listview"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </LinearLayout>
 </FrameLayout>
