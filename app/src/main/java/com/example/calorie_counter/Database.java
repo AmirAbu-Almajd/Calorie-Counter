@@ -13,7 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Database extends SQLiteOpenHelper {
-    private static String databaseName = "CalorieDB8";
+    private static String databaseName = "CalorieDB13";
     SQLiteDatabase calorieDatabase;
 
     public Database(Context context) {
@@ -31,7 +31,8 @@ public class Database extends SQLiteOpenHelper {
                 ", CONSTRAINT fk_col FOREIGN KEY(list_id) REFERENCES user_lists_ids(list_id))");
         db.execSQL("create table user_lists_ids(user_id integer , list_id integer, PRIMARY KEY(user_id,list_id)," +
                 "CONSTRAINT fk_col FOREIGN KEY(user_id) REFERENCES users(id))");
-        db.execSQL("create table user_weights(user_id integer not null , weight real , date Date )");
+        db.execSQL("create table user_weights(user_id integer not null , weight real , date Date, " +
+                "PRIMARY KEY(user_id,date),CONSTRAINT fk_col FOREIGN KEY(user_id) REFERENCES users(id))");
     }
 
     @Override
@@ -57,7 +58,17 @@ public class Database extends SQLiteOpenHelper {
         row.put("daily_intake", daily_intake);
         calorieDatabase = getWritableDatabase();
         calorieDatabase.insert("users", null, row);
+
         calorieDatabase.close();
+        /*Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, -5);
+        Date c_tomorrow = cal.getTime();
+        insert_weight_entry_temp(get_user_id(email),55,c_tomorrow);
+        cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, -2);
+        c_tomorrow = cal.getTime();
+        insert_weight_entry_temp(get_user_id(email),50,c_tomorrow);*/
+        insert_weight_entry(get_user_id(email),weight);
     }
 
     public Cursor getAllUsers() {
@@ -237,15 +248,9 @@ public class Database extends SQLiteOpenHelper {
     public void update_weight(int id_in,double newWeight)
     {
         String id =id_in + "";
-        Date c = Calendar.getInstance().getTime();
-        ContentValues row = new ContentValues();
-        row.put("user_id", id);
-        row.put("date", c.toString());
-        row.put("weight", newWeight);
-        calorieDatabase = getWritableDatabase();
-        calorieDatabase.insert("user_weights", null, row);
         ContentValues row2 = new ContentValues();
         row2.put("weight", newWeight);
+        calorieDatabase = getWritableDatabase();
         calorieDatabase.update("users",row2,"id like ?",new String[]{id});
         calorieDatabase.close();
     }
@@ -261,4 +266,57 @@ public class Database extends SQLiteOpenHelper {
         calorieDatabase.close();
         return weights;
     }
+
+    public void insert_weight_entry(int id_in,double newWeight)
+    {
+        String id =id_in + "";
+        Date c = Calendar.getInstance().getTime();
+        ContentValues row = new ContentValues();
+        row.put("user_id", id);
+        row.put("date", c.toString());
+        row.put("weight", newWeight);
+        calorieDatabase = getWritableDatabase();
+        calorieDatabase.insert("user_weights", null, row);
+    }
+
+    public Date get_last_weight_update_date(int id_in)
+    {
+        String id =id_in + "";
+        calorieDatabase = getReadableDatabase();
+        String[] rowDetails = {id};
+        Cursor lastDate = calorieDatabase.rawQuery("select max(date) from user_weights where user_id like ? ", rowDetails);
+        if (lastDate != null)
+            lastDate.moveToFirst();
+        calorieDatabase.close();
+        return new Date(lastDate.getString(0));
+    }
+
+    public void insert_weight_entry_temp(int id_in,double newWeight,Date c)
+    {
+        String id =id_in + "";
+        //Date c = Calendar.getInstance().getTime();
+        ContentValues row = new ContentValues();
+        row.put("user_id", id);
+        row.put("date", c.toString());
+        row.put("weight", newWeight);
+        calorieDatabase = getWritableDatabase();
+        calorieDatabase.insert("user_weights", null, row);
+    }
+
+    /*public boolean check_date_exist(int id_in,Date d)
+    {
+        String id =id_in + "";
+        calorieDatabase = getReadableDatabase();
+        String[] rowDetails = {id,d.toString()};
+        Cursor lastDate = calorieDatabase.rawQuery("select weight from user_weights where user_id like ? and date like ? ", rowDetails);
+        calorieDatabase.close();
+        if (lastDate != null)
+            return true;
+        else
+            return false;
+
+
+    }*/
+
+
 }

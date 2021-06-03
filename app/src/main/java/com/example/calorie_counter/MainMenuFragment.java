@@ -3,31 +3,27 @@ package com.example.calorie_counter;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.fragment.app.Fragment;
 
 import com.jjoe64.graphview.DefaultLabelFormatter;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
-import java.text.ParseException;
+import org.joda.time.DateTimeComparator;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -84,31 +80,46 @@ public class MainMenuFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_main_menu, container, false);
-        GraphView graphView = (GraphView) rootView.findViewById(R.id.weightGraph);
-        series1 = new LineGraphSeries<>();
+
+        db = new Database(getContext());
+
+        /////////setting date/////////
         TextView date_txt = rootView.findViewById(R.id.date_txt);
         Date c = Calendar.getInstance().getTime();
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
         String currentDate = sdf.format(c);
         date_txt.setText(currentDate);
-        graphView.getGridLabelRenderer().setLabelFormatter(new DefaultLabelFormatter() {
-            @Override
-            public String formatLabel(double value, boolean isValueX) {
-                if (isValueX) {
-                    return sdf.format(new Date((long) value));
-                } else {
-                    return super.formatLabel(value, isValueX);
-                }
-            }
-        });
-        db = new Database(getContext());
+        ////////calorie equation///////////
+        calories_tracking(rootView,c);
+        ///////////////////////uncomment to insert trail weights///////////////////////////
+        /*Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, -5);
+        Date c_tomorrow = cal.getTime();
+        db.insert_weight_entry_temp(userSingleton.getId(),55,c_tomorrow);
+        cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, -2);
+        c_tomorrow = cal.getTime();
+        db.insert_weight_entry_temp(userSingleton.getId(),50,c_tomorrow);*/
+        //////////////////graph//////////////////////////////
+        draw_weight_graph( rootView, sdf);
         Button updateWeight = rootView.findViewById(R.id.updateBtnGraph);
         EditText weightTxt = rootView.findViewById(R.id.newWeightTxt);
         updateWeight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                db.update_weight(userSingleton.getId(), Double.parseDouble(weightTxt.getText().toString()));
-                Cursor weights = db.get_user_weights(userSingleton.getId());
+                if(check_today_weight_update()==true)
+                {
+                    Toast.makeText(getContext(),"you already updated your weight today",Toast.LENGTH_LONG).show();
+                }
+                else
+                {
+                    db.insert_weight_entry(userSingleton.getId(),Double.parseDouble(weightTxt.getText().toString()));
+                    draw_weight_graph( rootView, sdf);
+                }
+            }
+        });
+        /*
+        Cursor weights = db.get_user_weights(userSingleton.getId());
                 series1 = new LineGraphSeries<>();
                 weights.moveToFirst();
                 while (!weights.isAfterLast()) {
@@ -122,13 +133,6 @@ public class MainMenuFragment extends Fragment {
                     weights.moveToNext();
                 }
                 graphView.addSeries(series1);
-
-
-            }
-        });
-        Cursor weights = db.get_user_weights(userSingleton.getId());
-        weights.moveToFirst();
-//        y=weights.getDa(0);
         while (!weights.isAfterLast()) {
             x = weights.getString(1);
             y = weights.getDouble(0);
@@ -138,28 +142,9 @@ public class MainMenuFragment extends Fragment {
                 e.printStackTrace();
             }
             weights.moveToNext();
-        }
-        graphView.addSeries(series1);
-        ListView meals_list = rootView.findViewById(R.id.meals_listview);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1);
-        meals_list.setAdapter(adapter);
-        TextView caloriesEqu_txt = rootView.findViewById(R.id.caloriesEqu_txt);
-        int daily_calorie_intake = db.get_daily_intake(userSingleton.getId());
+        }*/
 
-        db.add_meal(userSingleton.getId(), "oranges", c, 1, 50);
-        db.add_meal(userSingleton.getId(), "banana", c, 1, 100);
-        int calories_consumed = db.get_calories_consumed(userSingleton.getId(), c);
-        int calories_left = daily_calorie_intake - calories_consumed;
-        caloriesEqu_txt.setText("       " + calories_consumed + "         +         " + calories_left + "         =         " + String.valueOf(daily_calorie_intake));
-
-        Cursor c_meals = db.getTodayMeals(userSingleton.getId(), c);
-        while (!c_meals.isAfterLast()) {
-            adapter.add(c_meals.getString(0));
-            //adapter.add(c_meals.getString(1));
-            //adapter.add(c_meals.getString(2));
-            c_meals.moveToNext();
-        }
-
+        /////////////profile transition////////
         ImageButton profile_btn = rootView.findViewById(R.id.profile_btn);
         profile_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -169,5 +154,67 @@ public class MainMenuFragment extends Fragment {
             }
         });
         return rootView;
+    }
+
+    public void calories_tracking(View rootView,Date c)
+    {
+        TextView caloriesEqu_txt = rootView.findViewById(R.id.caloriesEqu_txt);
+        int daily_calorie_intake = db.get_daily_intake(userSingleton.getId());
+        int calories_consumed = db.get_calories_consumed(userSingleton.getId(), c);
+        int calories_left = daily_calorie_intake - calories_consumed;
+        caloriesEqu_txt.setText("       " + calories_consumed + "         +         " + calories_left + "         =         " + String.valueOf(daily_calorie_intake));
+        // ListView meals_list = rootView.findViewById(R.id.meals_listview);
+        //ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1);
+        //meals_list.setAdapter(adapter);
+        //db.add_meal(userSingleton.getId(), "oranges", c, 1, 50);
+        //db.add_meal(userSingleton.getId(), "banana", c, 1, 100);
+        /*Cursor c_meals = db.getTodayMeals(userSingleton.getId(), c);
+        while (!c_meals.isAfterLast()) {
+            adapter.add(c_meals.getString(0));
+            //adapter.add(c_meals.getString(1));
+            //adapter.add(c_meals.getString(2));
+            c_meals.moveToNext();
+        }*/
+    }
+
+    public void draw_weight_graph(View rootView,SimpleDateFormat sdf)
+    {
+        GraphView graphView = (GraphView) rootView.findViewById(R.id.weightGraph);
+        Cursor weights = db.get_user_weights(userSingleton.getId());
+        weights.moveToFirst();
+        DataPoint[] datapoints=new DataPoint[weights.getCount()];
+        for(int i=0;i<weights.getCount();i++)
+        {
+            datapoints[i]=new DataPoint(new Date(weights.getString(1)),weights.getDouble(0));
+            weights.moveToNext();
+        }
+
+        series1 = new LineGraphSeries<>(datapoints);
+        graphView.addSeries(series1);
+        graphView.getGridLabelRenderer().setNumHorizontalLabels(3);
+        graphView.getGridLabelRenderer().setLabelFormatter(new DefaultLabelFormatter() {
+            @Override
+            public String formatLabel(double value, boolean isValueX) {
+                if (isValueX) {
+                    return sdf.format(new Date((long) value));
+                } else {
+                    return super.formatLabel(value, isValueX);
+                }
+            }
+        });
+    }
+
+    public boolean check_today_weight_update()
+    {
+        /*Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, +1);
+        Date c_tomorrow = cal.getTime();*/
+        //LocalDate today=LocalDate.now();
+        Date today = Calendar.getInstance().getTime();
+        Date d=db.get_last_weight_update_date(userSingleton.getId());
+        if(DateTimeComparator.getDateOnlyInstance().compare(today,d)==0)
+            return true;
+        else
+            return false;
     }
 }

@@ -60,12 +60,13 @@
             <ListView
                 android:id="@+id/meals_listview"
                 android:layout_width="match_parent"
-                android:layout_height="212dp" />
+                android:layout_height="204dp" />
 
             <com.jjoe64.graphview.GraphView
                 android:id="@+id/weightGraph"
                 android:layout_width="match_parent"
-                android:layout_height="285dp"></com.jjoe64.graphview.GraphView>
+                android:layout_height="285dp"
+                android:layout_gravity="center"></com.jjoe64.graphview.GraphView>
 
             <LinearLayout
                 android:layout_width="match_parent"

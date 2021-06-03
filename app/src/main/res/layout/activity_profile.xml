@@ -60,13 +60,12 @@
             android:inputType="textPersonName"
             android:text="height" />
 
-        <EditText
+        <TextView
             android:id="@+id/weight_txt_update"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:inputType="textPersonName"
-            android:text="weight" />
+            android:text="TextView" />
 
         <Button
             android:id="@+id/update_btn"
