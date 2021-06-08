@@ -2,6 +2,7 @@ package com.example.calorie_counter;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 import com.jjoe64.graphview.DefaultLabelFormatter;
@@ -79,6 +81,7 @@ public class MainMenuFragment extends Fragment {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -95,7 +98,7 @@ public class MainMenuFragment extends Fragment {
         ////////calorie equation///////////
         calories_tracking(rootView,c);
         //////////////////graph//////////////////////////////
-        draw_weight_graph( rootView, sdf);
+        draw_weight_graph( rootView, d);
         Button updateWeight = rootView.findViewById(R.id.updateBtnGraph);
         EditText weightTxt = rootView.findViewById(R.id.newWeightTxt);
         updateWeight.setOnClickListener(new View.OnClickListener() {
@@ -108,7 +111,7 @@ public class MainMenuFragment extends Fragment {
                 else
                 {
                     db.insert_weight_entry(userSingleton.getId(),Double.parseDouble(weightTxt.getText().toString()));
-                    draw_weight_graph( rootView, sdf);
+                    draw_weight_graph( rootView, d);
                 }
             }
         });
@@ -145,7 +148,8 @@ public class MainMenuFragment extends Fragment {
         }*/
     }
 
-    public void draw_weight_graph(View rootView,SimpleDateFormat sdf)
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void draw_weight_graph(View rootView, LocalDate sdf)
     {
         GraphView graphView = (GraphView) rootView.findViewById(R.id.weightGraph);
         Cursor weights = db.get_user_weights(userSingleton.getId());
@@ -153,7 +157,9 @@ public class MainMenuFragment extends Fragment {
         DataPoint[] datapoints=new DataPoint[weights.getCount()];
         for(int i=0;i<weights.getCount();i++)
         {
-            datapoints[i]=new DataPoint(new Date(weights.getString(1)),weights.getDouble(0));
+            LocalDate localDate=new LocalDate(weights.getString(1));
+            Date date = localDate.toDateTimeAtStartOfDay().toDate();
+            datapoints[i]=new DataPoint(date,weights.getDouble(0));
             weights.moveToNext();
         }
 
@@ -164,7 +170,7 @@ public class MainMenuFragment extends Fragment {
             @Override
             public String formatLabel(double value, boolean isValueX) {
                 if (isValueX) {
-                    return sdf.format(new Date((long) value));
+                    return sdf.toString();
                 } else {
                     return super.formatLabel(value, isValueX);
                 }
@@ -174,13 +180,8 @@ public class MainMenuFragment extends Fragment {
 
     public boolean check_today_weight_update()
     {
-        /*Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DATE, +1);
-        Date c_tomorrow = cal.getTime();*/
-        //LocalDate today=LocalDate.now();
-        Date today = Calendar.getInstance().getTime();
-        Date d=db.get_last_weight_update_date(userSingleton.getId());
-        if(DateTimeComparator.getDateOnlyInstance().compare(today,d)==0)
+        LocalDate d=db.get_last_weight_update_date(userSingleton.getId());
+        if(LocalDate.now()==d)
             return true;
         else
             return false;

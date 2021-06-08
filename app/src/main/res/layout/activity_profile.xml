@@ -71,7 +71,8 @@
             android:id="@+id/update_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:backgroundTint="#FFA722"
             android:text="Update" />
+        //app:backgroundTint="#FFA722"
+
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

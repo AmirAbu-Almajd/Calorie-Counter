@@ -36,17 +36,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            app:backgroundTint="#FFA722"
+
             android:text="Login"
             />
+        //app:backgroundTint="#FFA722"
 
         <Button
             android:id="@+id/registerBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:text="Register"
-            app:backgroundTint="#FFA722" />
+            android:text="Register"/>
+            //app:backgroundTint="#FFA722" />
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

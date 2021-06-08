@@ -94,7 +94,7 @@
                     android:layout_margin="10dp"
                     android:layout_weight="1"
                     android:text="Update"
-                    app:backgroundTint="#FFA722" />
+                     />//app:backgroundTint="#FFA722"
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

@@ -32,7 +32,7 @@ public class Database extends SQLiteOpenHelper {
                 ", CONSTRAINT fk_col FOREIGN KEY(list_id) REFERENCES user_lists_ids(list_id))");
         db.execSQL("create table user_lists_ids(user_id integer , list_id integer, PRIMARY KEY(user_id,list_id)," +
                 "CONSTRAINT fk_col FOREIGN KEY(user_id) REFERENCES users(id))");
-        db.execSQL("create table user_weights(user_id integer not null , weight real , date Date, " +
+        db.execSQL("create table user_weights(user_id integer not null , weight real , date LocalDate, " +
                 "PRIMARY KEY(user_id,date),CONSTRAINT fk_col FOREIGN KEY(user_id) REFERENCES users(id))");
         db.execSQL("create table user_water_intake(user_id integer not null , cups_of_water integer , date LocalDate, target_cups integer, " +
                 "PRIMARY KEY(user_id,date),CONSTRAINT fk_col FOREIGN KEY(user_id) REFERENCES users(id))");
@@ -65,14 +65,12 @@ public class Database extends SQLiteOpenHelper {
         calorieDatabase.insert("users", null, row);
 
         calorieDatabase.close();
-        /*Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DATE, -5);
-        Date c_tomorrow = cal.getTime();
-        insert_weight_entry_temp(get_user_id(email),55,c_tomorrow);
-        cal = Calendar.getInstance();
-        cal.add(Calendar.DATE, -2);
-        c_tomorrow = cal.getTime();
-        insert_weight_entry_temp(get_user_id(email),50,c_tomorrow);*/
+        ////////insert temp weight records for graph(clear dataset first)//////
+        /*LocalDate c_yesterday=LocalDate.now();
+        c_yesterday.minusDays(3);
+        insert_weight_entry_temp(get_user_id(email),55,c_yesterday);
+        c_yesterday.minusDays(3);
+        insert_weight_entry_temp(get_user_id(email),50,c_yesterday);*/
         insert_weight_entry(get_user_id(email),weight);
     }
 
@@ -275,16 +273,15 @@ public class Database extends SQLiteOpenHelper {
     public void insert_weight_entry(int id_in,double newWeight)
     {
         String id =id_in + "";
-        Date c = Calendar.getInstance().getTime();
         ContentValues row = new ContentValues();
         row.put("user_id", id);
-        row.put("date", c.toString());
+        row.put("date", String.valueOf(LocalDate.now()));
         row.put("weight", newWeight);
         calorieDatabase = getWritableDatabase();
         calorieDatabase.insert("user_weights", null, row);
     }
 
-    public Date get_last_weight_update_date(int id_in)
+    public LocalDate get_last_weight_update_date(int id_in)
     {
         String id =id_in + "";
         calorieDatabase = getReadableDatabase();
@@ -293,13 +290,12 @@ public class Database extends SQLiteOpenHelper {
         if (lastDate != null)
             lastDate.moveToFirst();
         calorieDatabase.close();
-        return new Date(lastDate.getString(0));
+        return new LocalDate(lastDate.getString(0));
     }
 
-    public void insert_weight_entry_temp(int id_in,double newWeight,Date c)
+    public void insert_weight_entry_temp(int id_in,double newWeight,LocalDate c)
     {
         String id =id_in + "";
-        //Date c = Calendar.getInstance().getTime();
         ContentValues row = new ContentValues();
         row.put("user_id", id);
         row.put("date", c.toString());
