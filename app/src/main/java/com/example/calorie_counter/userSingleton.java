@@ -24,4 +24,8 @@ public class userSingleton {
         Double calorie_calculation = bmr*1.2;
         return calorie_calculation;
     }
+    public static int cal_waterIntake(Double weight)
+    {
+        return (int) Math.ceil((weight*0.033)*4.227);
+    }
 }

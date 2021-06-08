@@ -20,8 +20,12 @@ import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
 import org.joda.time.DateTimeComparator;
+import org.joda.time.LocalDate;
 
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -80,26 +84,16 @@ public class MainMenuFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_main_menu, container, false);
-
         db = new Database(getContext());
-
         /////////setting date/////////
         TextView date_txt = rootView.findViewById(R.id.date_txt);
         Date c = Calendar.getInstance().getTime();
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
         String currentDate = sdf.format(c);
-        date_txt.setText(currentDate);
+        LocalDate d=LocalDate.now();
+        date_txt.setText(d.toString());
         ////////calorie equation///////////
         calories_tracking(rootView,c);
-        ///////////////////////uncomment to insert trail weights///////////////////////////
-        /*Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DATE, -5);
-        Date c_tomorrow = cal.getTime();
-        db.insert_weight_entry_temp(userSingleton.getId(),55,c_tomorrow);
-        cal = Calendar.getInstance();
-        cal.add(Calendar.DATE, -2);
-        c_tomorrow = cal.getTime();
-        db.insert_weight_entry_temp(userSingleton.getId(),50,c_tomorrow);*/
         //////////////////graph//////////////////////////////
         draw_weight_graph( rootView, sdf);
         Button updateWeight = rootView.findViewById(R.id.updateBtnGraph);
@@ -118,32 +112,6 @@ public class MainMenuFragment extends Fragment {
                 }
             }
         });
-        /*
-        Cursor weights = db.get_user_weights(userSingleton.getId());
-                series1 = new LineGraphSeries<>();
-                weights.moveToFirst();
-                while (!weights.isAfterLast()) {
-                    x = weights.getString(1);
-                    y = weights.getDouble(0);
-                    try {
-                        series1.appendData(new DataPoint(new SimpleDateFormat("dd/MM/yyyy").parse(x), y), true, 100);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                    weights.moveToNext();
-                }
-                graphView.addSeries(series1);
-        while (!weights.isAfterLast()) {
-            x = weights.getString(1);
-            y = weights.getDouble(0);
-            try {
-                series1.appendData(new DataPoint(new SimpleDateFormat("dd/MM/yyyy").parse(x), y), true, 100);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            weights.moveToNext();
-        }*/
-
         /////////////profile transition////////
         ImageButton profile_btn = rootView.findViewById(R.id.profile_btn);
         profile_btn.setOnClickListener(new View.OnClickListener() {

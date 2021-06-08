@@ -7,13 +7,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import org.joda.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
 public class Database extends SQLiteOpenHelper {
-    private static String databaseName = "CalorieDB13";
+    private static String databaseName = "CalorieDB15";
     SQLiteDatabase calorieDatabase;
 
     public Database(Context context) {
@@ -33,6 +34,9 @@ public class Database extends SQLiteOpenHelper {
                 "CONSTRAINT fk_col FOREIGN KEY(user_id) REFERENCES users(id))");
         db.execSQL("create table user_weights(user_id integer not null , weight real , date Date, " +
                 "PRIMARY KEY(user_id,date),CONSTRAINT fk_col FOREIGN KEY(user_id) REFERENCES users(id))");
+        db.execSQL("create table user_water_intake(user_id integer not null , cups_of_water integer , date LocalDate, target_cups integer, " +
+                "PRIMARY KEY(user_id,date),CONSTRAINT fk_col FOREIGN KEY(user_id) REFERENCES users(id))");
+
     }
 
     @Override
@@ -42,6 +46,7 @@ public class Database extends SQLiteOpenHelper {
         db.execSQL("drop table if exists lists_items");
         db.execSQL("drop table if exists user_lists_ids");
         db.execSQL("drop table if exists user_weights");
+        db.execSQL("drop table if exists user_water_intake");
         onCreate(db);
     }
 
@@ -318,5 +323,57 @@ public class Database extends SQLiteOpenHelper {
 
     }*/
 
+    public int get_waterCups(int id_in, LocalDate date) {
+        String id = id_in + "";
+        calorieDatabase = getReadableDatabase();
+        String[] rowDetails = {id, date.toString()};
+        Cursor waterCups = calorieDatabase.rawQuery("select cups_of_water from user_water_intake where user_id like ? and date like ? ", rowDetails);
+        if(waterCups.getCount()==0)
+        {
+            ContentValues row = new ContentValues();
+            row.put("user_id", id);
+            row.put("date", date.toString());
+            row.put("cups_of_water", 0);
+            row.put("target_cups", userSingleton.cal_waterIntake(get_user_weight(id_in)));
+            calorieDatabase = getWritableDatabase();
+            calorieDatabase.insert("user_water_intake", null, row);
+            return 0;
+        }
+        if (waterCups != null) {
+            waterCups.moveToFirst();
+        }
+        calorieDatabase.close();
+        return waterCups.getInt(0);
+    }
 
+    public void update_water_intake(int id_in,int cups,LocalDate d)
+    {
+        String id = id_in + "";
+        ContentValues row2 = new ContentValues();
+        row2.put("cups_of_water", cups);
+        calorieDatabase = getWritableDatabase();
+        calorieDatabase.update("user_water_intake",row2,"user_id like ? and date like ?",new String[]{id,d.toString()});
+        calorieDatabase.close();
+    }
+    public double get_user_weight(int id_in)
+    {
+        calorieDatabase = getReadableDatabase();
+        Cursor cursor = calorieDatabase.rawQuery("select weight from users where id like ? ",new String[]{id_in+""});
+        if (cursor != null)
+            cursor.moveToFirst();
+        calorieDatabase.close();
+        return cursor.getDouble(0);
+    }
+    public int get_water_goal(int id_in,LocalDate date)
+    {
+        String id = id_in + "";
+        calorieDatabase = getReadableDatabase();
+        String[] rowDetails = {id, date.toString()};
+        Cursor waterCups = calorieDatabase.rawQuery("select target_cups from user_water_intake where user_id like ? and date like ? ", rowDetails);
+        if (waterCups != null) {
+            waterCups.moveToFirst();
+        }
+        calorieDatabase.close();
+        return waterCups.getInt(0);
+    }
 }

@@ -25,13 +25,15 @@ public class SimpleFragmentPagerAdapter extends FragmentPagerAdapter {
                 return new MainMenuFragment();
             case 1:
                 return new ShoppingListFragment();
+            case 2:
+                return new waterFragment();
         }
         return null;
     }
 
     @Override
     public int getCount() {
-        return 2;
+        return 3;
     }
 
 
@@ -45,6 +47,8 @@ public class SimpleFragmentPagerAdapter extends FragmentPagerAdapter {
                 return "Home";
             case 1:
                 return "ShoppingLists";
+            case 2:
+                return "Water";
         }
         return super.getPageTitle(position);
     }
