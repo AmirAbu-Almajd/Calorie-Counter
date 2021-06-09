@@ -172,11 +172,6 @@ public class ShoppingListFragment extends Fragment {
                 int tempBtnId = v.getId();
                 int tempTextId = tempBtnId + 3000;
                 TextView tempText2 = (TextView) rootView.findViewById(tempTextId);
-//                Toast.makeText(rootView.getContext(),tempText.getText(),Toast.LENGTH_SHORT).show();
-//                Toast.makeText(rootView.getContext(),tempText2.getText(),Toast.LENGTH_SHORT).show();
-                for (int j = 0; j < listsIds.size(); j++) {
-                    Log.e("id", listsIds.get(j).toString());
-                }
                 listsLayout.removeViewAt(tempBtnId);
                 Database db = new Database(rootView.getContext());
                 db.delete_list(id, listsIds.get(tempBtnId));

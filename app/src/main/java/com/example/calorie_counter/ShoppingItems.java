@@ -96,7 +96,7 @@ public class ShoppingItems extends AppCompatActivity implements BottomSheetDialo
             public void onClick(View v) {
                 db.add_grocery_list(id,newList.items,newList.quantities);
                 Intent intent = new Intent(ShoppingItems.this, mainTabs.class);
-                int page = 1;
+                int page = 2;
                 intent .putExtra("One",page);
                 overridePendingTransition(0, 0);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);

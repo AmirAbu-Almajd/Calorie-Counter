@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        app:backgroundTint="#FFA722"
+        app:backgroundTint="#00adb5"
         android:text="Add" />
 
 </LinearLayout>
