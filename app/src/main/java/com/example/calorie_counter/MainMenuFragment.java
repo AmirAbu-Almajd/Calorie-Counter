@@ -70,7 +70,16 @@ public class MainMenuFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    Date DateWithoutTime;
+    ArrayAdapter<String> nutri_facts;
+    ListView nutri_list;
     Double Cals;
+    Double cals;
+    Double fats;
+    Double sugar;
+    Double carbs;
+    Double sodium;
+    Double vitamin_c;
     JSONObject Json;
     int calories;
     String label;
@@ -128,21 +137,23 @@ public class MainMenuFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_main_menu, container, false);
         /////////Salma's Start/////////
+        nutri_facts= new ArrayAdapter<String>(getContext(), android.R.layout.simple_dropdown_item_1line);
+        nutri_list= (ListView) rootView.findViewById(R.id.meals_listview);
         AutoCompleteTextView auto = (AutoCompleteTextView) rootView.findViewById(R.id.search_txt);
         quantity= (EditText)  rootView.findViewById(R.id.Quantity_txt);
         quantity.setTypeface(Typeface.DEFAULT,Typeface.ITALIC);
         auto.setTypeface(Typeface.DEFAULT,Typeface.ITALIC);
-//        WriteinDatabase();
+        fetch_meals();
+        //WriteinDatabase();
         Items= new ArrayList<>();
         CaloriesDatabase = new Database(rootView.getContext());
-        db_size=CaloriesDatabase.get_items_count();
         Items=CaloriesDatabase.get_items();
         adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_dropdown_item_1line, Items);
         add_meal= (Button) rootView.findViewById(R.id.db_btn);
-        ListView responseList = (ListView) rootView.findViewById(R.id.meals_listview);
+        //ListView responseList = (ListView) rootView.findViewById(R.id.meals_listview);
         ArrayAdapter<String> listAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1);
         auto.setAdapter(adapter);
-        responseList.setAdapter(listAdapter);
+        //responseList.setAdapter(listAdapter);
         auto.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -153,7 +164,6 @@ public class MainMenuFragment extends Fragment {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if(adapter.isEmpty())
                 {
-                    Log.e("here","in if condition");
                     OkHttpClient client = new OkHttpClient();
                     String Url = "https://api.spoonacular.com/food/ingredients/autocomplete?apiKey=331336ee4d01495083696ea9ef54d599&query=" + auto.getText() + "&number=10&metaInformation=true&intolerances=bug";
                     Request request = new Request.Builder()
@@ -210,6 +220,7 @@ public class MainMenuFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View arg1, int position, long arg3) {
                 quantity.setHint("how many "+ auto.getText()+"s did you eat");
+                CaloriesDatabase = new Database(rootView.getContext());
                 String id =CaloriesDatabase.get_item_id(auto.getText().toString());
                 OkHttpClient client = new OkHttpClient();
                 String Url = "https://api.spoonacular.com/food/ingredients/"+id +"/information?apiKey=331336ee4d01495083696ea9ef54d599&query="+auto.getText().toString()+"&amount=100&unit=grams";
@@ -253,7 +264,6 @@ public class MainMenuFragment extends Fragment {
                                         write_to_file(String.valueOf(Cals));
                                     } catch (JSONException e) {
                                         e.printStackTrace();
-                                        Log.e("HEyCatch", e+"");
                                     }
                                 }
                             });
@@ -261,18 +271,95 @@ public class MainMenuFragment extends Fragment {
                     }
                 });
 
+
+
             }
 
         });
         add_meal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Date today = Calendar.getInstance().getTime();
-                double from_file= read_from_file();
-                double final_calories= from_file * Double.valueOf(quantity.getText().toString());
-                CaloriesDatabase.add_meal(userSingleton.getId(),auto.getText().toString(),today,Double.valueOf(quantity.getText().toString()),final_calories);
+                CaloriesDatabase = new Database(rootView.getContext());
+                String id = CaloriesDatabase.get_item_id(auto.getText().toString());
+                OkHttpClient client = new OkHttpClient();
+                String Url = "https://api.spoonacular.com/food/ingredients/" + id + "/information?apiKey=331336ee4d01495083696ea9ef54d599&query=" + auto.getText().toString() + "&amount=100&unit=grams";
+                Request request = new Request.Builder()
+                        .url(Url)
+                        .addHeader("Content-Type", "application/json")
+                        .get()
+                        .build();
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onResponse(Call call, final Response response) throws IOException {
+                        if (response.isSuccessful()) {
+                            final String myResponse = response.body().string();
+                            getActivity().runOnUiThread(new Runnable() {
+                                @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+                                @Override
+
+                                public void run() {
+                                    String result = "";
+                                    CaloriesDatabase = new Database(rootView.getContext());
+                                    try {
+                                        JSONObject rootobj = new JSONObject(myResponse);
+                                        String name = rootobj.getString("name");
+                                        JSONObject innerobj = rootobj.getJSONObject("nutrition");
+                                        JSONArray nutrients = innerobj.getJSONArray("nutrients");
+                                        for (int i = 0; i < nutrients.length(); i++) {
+                                            JSONObject arrobj = nutrients.getJSONObject(i);
+                                            if (arrobj.getString("title").equals("Calories")) {
+                                                 cals = arrobj.getDouble("amount");
+                                            }
+                                            if (arrobj.getString("title").equals("Fat")) {
+                                                 fats = arrobj.getDouble("amount");
+                                            }
+                                            if (arrobj.getString("title").equals("Sodium")) {
+                                                 sodium = arrobj.getDouble("amount");
+                                            }
+                                            if (arrobj.getString("title").equals("Net Carbohydrates")) {
+                                                 carbs = arrobj.getDouble("amount");
+                                            }
+                                            if (arrobj.getString("title").equals("Sugar")) {
+                                                 sugar = arrobj.getDouble("amount");
+                                            }
+                                            if (arrobj.getString("title").equals("Vitamin C")) {
+                                                vitamin_c = arrobj.getDouble("amount");
+                                            }
+
+                                        }
+
+
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                    Calendar calendar = Calendar.getInstance();
+                                    calendar.set(Calendar.HOUR_OF_DAY, 0);
+                                    calendar.set(Calendar.MINUTE, 0);
+                                    calendar.set(Calendar.SECOND, 0);
+                                    calendar.set(Calendar.MILLISECOND, 0);
+                                    Date today = calendar.getTime();
+                                    Toast.makeText(getActivity(),today.toString(),Toast.LENGTH_LONG).show();
+                                    double from_file = read_from_file();
+                                    double final_calories = from_file * Double.valueOf(quantity.getText().toString());
+                                    CaloriesDatabase.add_meal(userSingleton.getId(),auto.getText().toString(),today,Double.valueOf(quantity.getText().toString()),cals,fats,sugar,carbs,vitamin_c,sodium );
+//                                    int meals_count=CaloriesDatabase.get_meals_count();
+                                    //Toast.makeText(getActivity(),meals_count,Toast.LENGTH_LONG).show();
+
+
+                                }
+                            });
+                        }
+                    }
+                });
             }
         });
+
 
         /////////Salma's End/////////
         /////////setting date/////////
@@ -361,6 +448,7 @@ public class MainMenuFragment extends Fragment {
             });
         }
     }
+
     public void write_to_file(String Cals){
         FileOutputStream stream = null;
         try {
@@ -435,6 +523,27 @@ public class MainMenuFragment extends Fragment {
         }*/
         //
     }
+
+    public void fetch_meals()
+    {
+        Date today = Calendar.getInstance().getTime();
+        int id=userSingleton.getId();
+        CaloriesDatabase= new Database(getContext());
+        Cursor cursor= CaloriesDatabase.getTodayMeals(id,today);
+        while(!cursor.isAfterLast())
+        {
+            nutri_facts.add("Calories   "+String.valueOf(cursor.getDouble(5)+ "kcal"+'\n'));
+            nutri_facts.add("Fats   "+String.valueOf(cursor.getDouble(6)+ "kcal"+'\n'));
+            nutri_facts.add("Sugar   "+String.valueOf(cursor.getDouble(7)+ "kcal"+'\n'));
+            nutri_facts.add("Carbs   "+String.valueOf(cursor.getDouble(8)+ "kcal"+'\n'));
+            nutri_facts.add("Vitamin C   "+String.valueOf(cursor.getDouble(9)+ "kcal"+'\n'));
+            nutri_facts.add("Sodium   "+String.valueOf(cursor.getDouble(10)+ "kcal"+'\n'));
+        }
+        nutri_list.setAdapter(nutri_facts);
+        nutri_facts.notifyDataSetChanged();
+
+    }
+
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void draw_weight_graph(View rootView, LocalDate sdf)
