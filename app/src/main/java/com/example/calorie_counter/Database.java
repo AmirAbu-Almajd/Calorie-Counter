@@ -13,6 +13,7 @@ import android.util.Pair;
 import org.joda.time.LocalDate;
 
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
@@ -41,6 +42,7 @@ public class Database extends SQLiteOpenHelper {
                 "PRIMARY KEY(user_id,date),CONSTRAINT fk_col FOREIGN KEY(user_id) REFERENCES users(id))");
         db.execSQL("create table user_water_intake(user_id integer not null , cups_of_water integer , date LocalDate, target_cups integer, " +
                 "PRIMARY KEY(user_id,date),CONSTRAINT fk_col FOREIGN KEY(user_id) REFERENCES users(id))");
+        db.execSQL("create table items(id text not null, name text not null)");
 
     }
 
@@ -52,6 +54,7 @@ public class Database extends SQLiteOpenHelper {
         db.execSQL("drop table if exists user_lists_ids");
         db.execSQL("drop table if exists user_weights");
         db.execSQL("drop table if exists user_water_intake");
+        db.execSQL("drop table if exists items");
         onCreate(db);
     }
 
@@ -380,5 +383,54 @@ public class Database extends SQLiteOpenHelper {
         }
         calorieDatabase.close();
         return waterCups.getInt(0);
+    }
+    public String get_item_id(String name)
+    {
+        String fetched_id="";
+        calorieDatabase = getReadableDatabase();
+        String[] rowDetails = {name};
+        Cursor cursor= calorieDatabase.rawQuery("select id from items where name like ?", rowDetails);
+        cursor.moveToFirst();
+        if (cursor != null)
+        {
+            cursor.moveToFirst();
+            fetched_id = cursor.getString(0);
+        }
+        return fetched_id;
+    }
+    public List<String> get_items()
+    {
+        List<String> items= new ArrayList<>();
+        calorieDatabase = getReadableDatabase();
+        Cursor cursor= calorieDatabase.rawQuery("select Distinct * from items",null);
+        cursor.moveToFirst();
+        if (cursor != null)
+        {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast())
+            {
+                items.add(cursor.getString(1));
+                cursor.moveToNext();
+            }
+        }
+        cursor.close();
+        return items;
+    }
+    public void insert_food_item(String id, String name)
+    {
+        ContentValues row = new ContentValues();
+        row.put("id", id);
+        row.put("name",name);
+        calorieDatabase = getWritableDatabase();
+        calorieDatabase.insert("items", null, row);
+
+    }
+    public int get_items_count()
+    {
+        calorieDatabase = getReadableDatabase();
+        Cursor cursor = calorieDatabase.rawQuery("SELECT count(*)  FROM items", null);
+        int size= cursor.getCount();
+        cursor.close();
+        return size;
     }
 }
