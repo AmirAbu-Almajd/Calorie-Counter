@@ -9,24 +9,38 @@
     <!-- TODO: Update blank fragment layout -->
 
 
-
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/newListBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
+        android:layout_gravity="center|bottom"
         android:layout_margin="16dp"
         android:src="@mipmap/cart_icon_foreground"
         android:tint="#F8F5F5"
-        app:backgroundTint="#FFA722"
+        app:backgroundTint="#00adb5"
+
         app:fabSize="normal"
         app:maxImageSize="30dp"
         app:rippleColor="#FBFBFB" />
 
-    <ListView
-        android:id="@+id/groceryListView"
+
+
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/listsLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"></LinearLayout>
+        </LinearLayout>
+    </ScrollView>
 
 
 </FrameLayout>

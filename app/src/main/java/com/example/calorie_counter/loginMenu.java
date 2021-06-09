@@ -15,7 +15,7 @@ public class loginMenu extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ///////uncomment to clear database/////
-        getApplicationContext().deleteDatabase("CalorieDB15");
+//        getApplicationContext().deleteDatabase("CalorieDB15");
 
         EditText emailtxt = (EditText)findViewById(R.id.emailTxt);
         EditText password  = (EditText)findViewById(R.id.passwordTxt);

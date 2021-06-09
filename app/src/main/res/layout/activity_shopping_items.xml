@@ -6,37 +6,36 @@
     android:layout_height="match_parent"
     tools:context=".ShoppingItems">
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/addListBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_margin="16dp"
+        android:src="@mipmap/tick_icon_foreground"
+        android:tint="#F8F5F5"
+        app:backgroundTint="#00adb5"
+        app:fabSize="normal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:maxImageSize="35dp"
+        app:rippleColor="#FBFBFB" />
+
     <GridView
         android:id="@+id/itemsGrid"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="1dp"
+        android:layout_marginTop="572dp"
+        android:background="#000000"
         android:columnWidth="100dp"
         android:numColumns="auto_fit"
         android:rowHeight="200dp"
-        android:background="#000000"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:rippleColor="#FBFBFB"
-        >
+        app:rippleColor="#FBFBFB">
 
     </GridView>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/addListBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
-        android:src="@mipmap/tick_icon_foreground"
-        app:layout_constraintEnd_toEndOf="@+id/itemsGrid"
-        app:layout_constraintBottom_toBottomOf="@+id/itemsGrid"
-        android:tint="#F8F5F5"
-        app:backgroundTint="#FFA722"
-        app:fabSize="normal"
-        app:maxImageSize="35dp"
-        app:rippleColor="#FBFBFB"
-        tools:layout_editor_absoluteX="1dp"
-        tools:layout_editor_absoluteY="1dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

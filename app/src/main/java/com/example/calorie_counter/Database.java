@@ -1,13 +1,18 @@
 package com.example.calorie_counter;
 
+import android.annotation.TargetApi;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Build;
 import android.util.Log;
+import android.util.Pair;
 
 import org.joda.time.LocalDate;
+
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
@@ -131,10 +136,11 @@ public class Database extends SQLiteOpenHelper {
         calorieDatabase.close();
     }
 
-    public List<Cursor> get_user_lists(int user_id){
+    @TargetApi(Build.VERSION_CODES.ECLAIR)
+    public List<Pair<Integer,Cursor>> get_user_lists(int user_id){
         calorieDatabase = getReadableDatabase();
         String[] rowDetails = {user_id+""};
-        List<Cursor> user_lists = new LinkedList<Cursor>();
+        List<Pair<Integer,Cursor>> user_lists = new LinkedList<Pair<Integer,Cursor>>();
         Cursor user_lists_ids = calorieDatabase.rawQuery("select list_id from user_lists_ids " +
                 "where user_id like ?",rowDetails);
         user_lists_ids.moveToFirst();
@@ -142,15 +148,18 @@ public class Database extends SQLiteOpenHelper {
             Log.e("Size",user_lists_ids.getCount()+"");
             String[] rowDetails2 = {user_lists_ids.getInt(0)+""};
             Cursor list = calorieDatabase.rawQuery("select item, quantity from lists_items where list_id like ?",rowDetails2);
-            user_lists.add(list);
+            Pair<Integer,Cursor> pairList = new Pair<Integer, Cursor>(user_lists_ids.getInt(0),list);
+            user_lists.add(pairList);
             user_lists_ids.moveToNext();
         }
         return user_lists;
     }
-    public void delete_list(int id){
+    public void delete_list(int id , int list_id){
         calorieDatabase = getWritableDatabase();
-        calorieDatabase.rawQuery("delete from user_lists_ids where user_id = "+id,null);
-        calorieDatabase.close();
+        String[] rowDetails = {list_id+""};
+        String[] rowDetails2 = {id+"", list_id+""};
+        calorieDatabase.delete("lists_items",  "list_id"+ "=?", new String[]{list_id+""});
+        calorieDatabase.delete("user_lists_ids",  "user_id=? and list_id=?", new String[]{id+"",list_id+""});
     }
 
     public Cursor getUserMeals(String email) {
@@ -342,7 +351,7 @@ public class Database extends SQLiteOpenHelper {
         return waterCups.getInt(0);
     }
 
-    public void update_water_intake(int id_in,int cups,LocalDate d)
+    public void update_water_intake(int id_in, int cups, LocalDate d)
     {
         String id = id_in + "";
         ContentValues row2 = new ContentValues();
