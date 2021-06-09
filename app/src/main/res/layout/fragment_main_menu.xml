@@ -54,7 +54,6 @@
                 android:textSize="20dp" />
 
 
-
             <TextView
                 android:id="@+id/textView3"
                 android:layout_width="match_parent"
@@ -124,10 +123,36 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <AutoCompleteTextView
+                android:id="@+id/search_txt"
+                android:layout_width="match_parent"
+                android:layout_height="53dp"
+                android:layout_margin="10dp"
+
+                android:hint="what did you eat" />
+
+
+            <EditText
+                android:id="@+id/Quantity_txt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="10dp"
+                android:hint="how many did you eat" />
+
+            <Button
+                android:id="@+id/db_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="10dp"
+                android:text="Add meal"
+                app:backgroundTint="#00adb5" />
+
             <ListView
                 android:id="@+id/meals_listview"
                 android:layout_width="match_parent"
-                android:layout_height="204dp" >
+                android:layout_height="204dp">
 
             </ListView>
 
@@ -158,8 +183,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
                     android:layout_weight="1"
-                    android:text="Update"
-                     />//app:backgroundTint="#FFA722"
+                    android:text="Update" />//app:backgroundTint="#FFA722"
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

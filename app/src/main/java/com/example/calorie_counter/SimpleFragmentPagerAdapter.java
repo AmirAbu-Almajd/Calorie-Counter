@@ -23,9 +23,11 @@ public class SimpleFragmentPagerAdapter extends FragmentPagerAdapter {
         {
             case 0:
                 return new MainMenuFragment();
-            case 2:
-                return new ShoppingListFragment();
             case 1:
+                return new NutritionsFragment();
+            case 3:
+                return new ShoppingListFragment();
+            case 2:
                 return new waterFragment();
         }
         return null;
@@ -33,7 +35,7 @@ public class SimpleFragmentPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        return 3;
+        return 4;
     }
 
 
@@ -45,9 +47,11 @@ public class SimpleFragmentPagerAdapter extends FragmentPagerAdapter {
         {
             case 0:
                 return "Home";
-            case 2:
-                return "ShoppingLists";
             case 1:
+                return "Nutrition Facts";
+            case 3:
+                return "Shopping Lists";
+            case 2:
                 return "Water";
         }
         return super.getPageTitle(position);
