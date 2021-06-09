@@ -20,7 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Database extends SQLiteOpenHelper {
-    private static String databaseName = "CalorieDB15";
+    private static String databaseName = "CalorieDB16";
     SQLiteDatabase calorieDatabase;
 
     public Database(Context context) {
@@ -176,12 +176,14 @@ public class Database extends SQLiteOpenHelper {
         return meals;
     }
 
-    public int signIn(String emailIn, String passwordIn) {
+    public Number signIn(String emailIn, String passwordIn) {
 //        emailIn = "adham@gmail.com";
 //        passwordIn = "121313";
         String[] rowDetails = {emailIn, passwordIn};
         calorieDatabase = getReadableDatabase();
         Cursor id = calorieDatabase.rawQuery("select id from users where email like ? and password like ?", rowDetails);
+        if(id.getCount()==0)
+            return null;
         if (id != null)
             id.moveToFirst();
         calorieDatabase.close();

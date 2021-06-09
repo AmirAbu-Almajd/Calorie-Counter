@@ -414,26 +414,11 @@ public class MainMenuFragment extends Fragment {
         int calories_consumed = db.get_calories_consumed(userSingleton.getId(), c);
         int calories_left = daily_calorie_intake - calories_consumed;
         caloriesEqu_txt.setText("       " + calories_consumed + "         +         " + calories_left + "         =         " + String.valueOf(daily_calorie_intake));
-
-
         ////////////////////// progress Bar//////////////////
         ProgressBar simpleProgressBar =(ProgressBar)rootView.findViewById(R.id.progressBar4);
         TextView text=(TextView) rootView.findViewById(R.id.textView4);
         simpleProgressBar.setProgress(calories_consumed);
         text.setText(calories_consumed+"%");
-        // ListView meals_list = rootView.findViewById(R.id.meals_listview);
-        //ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1);
-        //meals_list.setAdapter(adapter);
-        //db.add_meal(userSingleton.getId(), "oranges", c, 1, 50);
-        //db.add_meal(userSingleton.getId(), "banana", c, 1, 100);
-        /*Cursor c_meals = db.getTodayMeals(userSingleton.getId(), c);
-        while (!c_meals.isAfterLast()) {
-            adapter.add(c_meals.getString(0));
-            //adapter.add(c_meals.getString(1));
-            //adapter.add(c_meals.getString(2));
-            c_meals.moveToNext();
-        }*/
-        //
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -469,7 +454,7 @@ public class MainMenuFragment extends Fragment {
     public boolean check_today_weight_update()
     {
         LocalDate d=db.get_last_weight_update_date(userSingleton.getId());
-        if(LocalDate.now()==d)
+        if(LocalDate.now().equals(d))
             return true;
         else
             return false;
