@@ -61,10 +61,75 @@
                 android:layout_height="wrap_content"
                 android:text="Meals of today" />
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/linearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="151dp">
+
+
+                <ProgressBar
+                    android:id="@+id/progressBar3"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:layout_marginStart="171dp"
+                    android:layout_marginLeft="171dp"
+                    android:layout_marginEnd="171dp"
+                    android:layout_marginRight="171dp"
+                    android:layout_marginBottom="1dp"
+                    android:indeterminateOnly="false"
+                    android:progressDrawable="@drawable/circle"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ProgressBar
+                    android:id="@+id/progressBar4"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="122dp"
+                    android:layout_height="122dp"
+                    android:layout_marginStart="188dp"
+                    android:layout_marginLeft="188dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="188dp"
+                    android:layout_marginRight="188dp"
+                    android:layout_marginBottom="15dp"
+                    android:indeterminateOnly="false"
+                    android:progressDrawable="@drawable/innercircle"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="1.0"
+                    tools:ignore="MissingConstraints" />
+
+                <TextView
+                    android:id="@+id/textView4"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="49dp"
+                    android:layout_marginLeft="49dp"
+                    android:layout_marginTop="47dp"
+                    android:layout_marginEnd="22dp"
+                    android:layout_marginRight="22dp"
+                    android:layout_marginBottom="25dp"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/progressBar4"
+                    app:layout_constraintEnd_toEndOf="@+id/progressBar4"
+                    app:layout_constraintStart_toStartOf="@+id/progressBar4"
+                    app:layout_constraintTop_toTopOf="@+id/progressBar4"
+                    app:layout_constraintVertical_bias="0.0" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
             <ListView
                 android:id="@+id/meals_listview"
                 android:layout_width="match_parent"
-                android:layout_height="204dp" />
+                android:layout_height="204dp" >
+
+            </ListView>
 
             <com.jjoe64.graphview.GraphView
                 android:id="@+id/weightGraph"

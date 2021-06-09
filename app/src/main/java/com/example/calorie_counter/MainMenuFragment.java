@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -124,6 +125,8 @@ public class MainMenuFragment extends Fragment {
                 startActivity(i);
             }
         });
+
+
         return rootView;
     }
 
@@ -134,6 +137,16 @@ public class MainMenuFragment extends Fragment {
         int calories_consumed = db.get_calories_consumed(userSingleton.getId(), c);
         int calories_left = daily_calorie_intake - calories_consumed;
         caloriesEqu_txt.setText("       " + calories_consumed + "         +         " + calories_left + "         =         " + String.valueOf(daily_calorie_intake));
+
+
+        ////////////////////// progress Bar//////////////////
+
+        ProgressBar simpleProgressBar =(ProgressBar)rootView.findViewById(R.id.progressBar4);
+        TextView text=(TextView) rootView.findViewById(R.id.textView4);
+
+        simpleProgressBar.setProgress(calories_consumed);
+        text.setText(calories_consumed+"%");
+
         // ListView meals_list = rootView.findViewById(R.id.meals_listview);
         //ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1);
         //meals_list.setAdapter(adapter);
@@ -146,6 +159,12 @@ public class MainMenuFragment extends Fragment {
             //adapter.add(c_meals.getString(2));
             c_meals.moveToNext();
         }*/
+
+
+
+        //
+
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
