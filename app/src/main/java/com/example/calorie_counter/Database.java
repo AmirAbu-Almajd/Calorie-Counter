@@ -102,21 +102,44 @@ public class Database extends SQLiteOpenHelper {
 
     }
 
-    public void add_meal(int id, String meal, Date d, double quantity, double cal, double fats, double sugar, double carbs, double vitamin_c, double sodium) {
-        ContentValues row = new ContentValues();
-        row.put("user_id", id);
-        row.put("meal", meal);
-        row.put("date", String.valueOf(d));
-        row.put("quantity", quantity);
-        row.put("calories", cal);
-        row.put("fats", fats);
-        row.put("sugar", sugar);
-        row.put("carbs", carbs);
-        row.put("vitamin_c", vitamin_c);
-        row.put("sodium", sodium);
-        calorieDatabase = getWritableDatabase();
-        calorieDatabase.insert("user_meals", null, row);
-        calorieDatabase.close();
+    public void add_meal(int id, String meal, LocalDate d, double quantity, double cal, double fats, double sugar, double carbs, double vitamin_c, double sodium) {
+        calorieDatabase = getReadableDatabase();
+        String[] rowDetails = {id + "", meal, d + ""};
+        Cursor checkingCursor = calorieDatabase.rawQuery("select meal,quantity,calories,fats,sugar,carbs,vitamin_c,sodium from user_meals where user_id like ? and meal like ? and date like ?", rowDetails);
+        if (checkingCursor.getCount()==0) {
+            ContentValues row = new ContentValues();
+            row.put("user_id", id);
+            row.put("meal", meal);
+            row.put("date", String.valueOf(d));
+            row.put("quantity", quantity);
+            row.put("calories", cal*quantity);
+            row.put("fats", fats*quantity);
+            row.put("sugar", sugar*quantity);
+            row.put("carbs", carbs*quantity);
+            row.put("vitamin_c", vitamin_c*quantity);
+            row.put("sodium", sodium*quantity);
+            calorieDatabase = getWritableDatabase();
+            calorieDatabase.insert("user_meals", null, row);
+            calorieDatabase.close();
+        }
+        else {
+            ContentValues row = new ContentValues();
+            checkingCursor.moveToFirst();
+            double newQuantity = checkingCursor.getDouble(1)+quantity;
+            row.put("user_id", id);
+            row.put("meal", meal);
+            row.put("date", String.valueOf(d));
+            row.put("quantity", newQuantity);
+            row.put("calories", cal*newQuantity);
+            row.put("fats", fats*newQuantity);
+            row.put("sugar", sugar*newQuantity);
+            row.put("carbs", carbs*newQuantity);
+            row.put("vitamin_c", vitamin_c*newQuantity);
+            row.put("sodium", sodium*newQuantity);
+            calorieDatabase = getWritableDatabase();
+            calorieDatabase.update("user_meals", row,"user_id like ? and meal like ? and date like ?",rowDetails);
+            calorieDatabase.close();
+        }
     }
 
     public void add_grocery_list(int user_id, List<String> items, List<Double> quantities) {
@@ -188,7 +211,7 @@ public class Database extends SQLiteOpenHelper {
         String[] rowDetails = {emailIn, passwordIn};
         calorieDatabase = getReadableDatabase();
         Cursor id = calorieDatabase.rawQuery("select id from users where email like ? and password like ?", rowDetails);
-        if(id.getCount()==0)
+        if (id.getCount() == 0)
             return null;
         if (id != null)
             id.moveToFirst();
@@ -206,20 +229,17 @@ public class Database extends SQLiteOpenHelper {
         return u_daily_intake.getInt(0);
     }
 
-    public int get_calories_consumed(int id_in, Date date_in) {
-        int calories = 0;
+    public double get_calories_consumed(int id_in, LocalDate date_in) {
+        double calories = 0;
         String id = id_in + "";
         String date = date_in + "";
         calorieDatabase = getReadableDatabase();
         String[] rowDetails = {id, date};
-        Cursor meals = calorieDatabase.rawQuery("select calories from user_meals where user_id like ? and date like ?", rowDetails);
-        meals.moveToFirst();
-        if (meals != null) {
-            meals.moveToFirst();
-            while (!meals.isAfterLast()) {
-                calories += Integer.parseInt(meals.getString(0));
-                meals.moveToNext();
-            }
+        Cursor caloriesCursor = calorieDatabase.rawQuery("select SUM(calories) from user_meals where user_id like ? and date like ?", rowDetails);
+        caloriesCursor.moveToFirst();
+        if (caloriesCursor != null) {
+            calories = caloriesCursor.getDouble(0);
+
         }
         //calorieDatabase.close();
         return calories;
@@ -251,12 +271,12 @@ public class Database extends SQLiteOpenHelper {
         return cursor;
     }
 
-    public Cursor getTodayMeals(int id_in, Date date_in) {
+    public Cursor getTodayMeals(int id_in, LocalDate date_in) {
         String id = id_in + "";
         String date = date_in + "";
         calorieDatabase = getReadableDatabase();
         String[] rowDetails = {id, date};
-        Cursor meals = calorieDatabase.rawQuery("select meal,quantity,calories from user_meals where user_id like ? and date like ?", rowDetails);
+        Cursor meals = calorieDatabase.rawQuery("select meal,quantity,calories,fats,sugar,carbs,vitamin_c,sodium from user_meals where user_id like ? and date like ?", rowDetails);
         if (meals != null)
             meals.moveToFirst();
         calorieDatabase.close();
@@ -420,103 +440,6 @@ public class Database extends SQLiteOpenHelper {
 
     }
 
-//    public List<List<Map<Double, Double>>> get_nutritions_consumed(int id_in) {
-//        List<Map<Double, Double>> temp = new ArrayList<Map<Double, Double>>();
-//        Map<Double, Double> temp_map = new HashMap<Double, Double>();
-//        List<List<Map<Double, Double>>> nutrients = new ArrayList<List<Map<Double, Double>>>();
-//        calorieDatabase = getReadableDatabase();
-//        Date today = Calendar.getInstance().getTime();
-//        String[] args = {today.toString(),String.valueOf(id_in)};
-//        Cursor cursor = calorieDatabase.rawQuery("SELECT cals, quantity from user_meals where date like ? and user_id like ?", args);
-//        if (cursor != null) {
-//            cursor.moveToFirst();
-//            while (!cursor.isAfterLast()) {
-//                temp_map.put(cursor.getDouble(5), cursor.getDouble(4));
-//                temp.add(temp_map);
-//                cursor.moveToNext();
-//
-//            }
-//            nutrients.add(temp);
-//            cursor.close();
-//            Cursor cur = calorieDatabase.rawQuery("SELECT fats, quantity from user_meals where date like ? and user_id like ?", args);
-//            if (cur != null) {
-//
-//                temp = new ArrayList<Map<Double, Double>>();
-//                cur.moveToFirst();
-//                while (!cur.isAfterLast()) {
-//                    temp_map.put(cur.getDouble(5), cur.getDouble(4));
-//                    temp.add(temp_map);
-//                    cur.moveToNext();
-//                }
-//                nutrients.add(temp);
-//                cur.close();
-//            }
-//            Cursor cursor1 = calorieDatabase.rawQuery("SELECT sugar, quantity from user_meals where date like ? and user_id like ?", args);
-//            if (cursor1 != null) {
-//
-//                temp = new ArrayList<Map<Double, Double>>();
-//                cursor1.moveToFirst();
-//                while (!cursor1.isAfterLast()) {
-//                    temp_map.put(cursor1.getDouble(5), cursor1.getDouble(4));
-//                    temp.add(temp_map);
-//                    cursor1.moveToNext();
-//                }
-//                nutrients.add(temp);
-//                cursor1.close();
-//            }
-//        }
-//
-//        Cursor cursor3 = calorieDatabase.rawQuery("SELECT carbs, quantity from user_meals where date like ? and user_id like ?", args);
-//        if (cursor3 != null) {
-//
-//            temp = new ArrayList<Map<Double, Double>>();
-//            cursor3.moveToFirst();
-//            while (!cursor3.isAfterLast()) {
-//                temp_map.put(cursor3.getDouble(5), cursor3.getDouble(4));
-//                temp.add(temp_map);
-//                cursor3.moveToNext();
-//            }
-//            nutrients.add(temp);
-//            cursor3.close();
-//        }
-//        Cursor cursor4 = calorieDatabase.rawQuery("SELECT vitamin_c, quantity from user_meals where date like ? and user_id like ?", args);
-//        if (cursor4 != null) {
-//
-//            temp = new ArrayList<Map<Double, Double>>();
-//            cursor4.moveToFirst();
-//            while (!cursor4.isAfterLast()) {
-//                temp_map.put(cursor4.getDouble(5), cursor4.getDouble(4));
-//                temp.add(temp_map);
-//                cursor4.moveToNext();
-//            }
-//            nutrients.add(temp);
-//            cursor4.close();
-//        }
-//        Cursor cursor5 = calorieDatabase.rawQuery("SELECT sodium, quantity from user_meals where date like ? and user_id like ?", args);
-//        if (cursor5 != null) {
-//
-//            temp = new ArrayList<Map<Double, Double>>();
-//            cursor5.moveToFirst();
-//            while (!cursor5.isAfterLast()) {
-//                temp_map.put(cursor5.getDouble(5), cursor5.getDouble(4));
-//                temp.add(temp_map);
-//                cursor5.moveToNext();
-//            }
-//            cursor5.close();
-//            nutrients.add(temp);
-//        }
-//
-//        return nutrients;
-//    }
 
-//    public int get_meals_count() {
-//        calorieDatabase = getReadableDatabase();
-//        Date today = Calendar.getInstance().getTime();
-//        String[] args = {today.toString()};
-//        Cursor cursor = calorieDatabase.rawQuery("SELECT count FROM user_meals where data like ? and user_id like ?", args);
-//        int size = cursor.getCount();
-//        cursor.close();
-//        return size;
-//    }
 }
 

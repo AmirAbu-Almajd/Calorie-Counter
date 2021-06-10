@@ -1,6 +1,8 @@
 package com.example.calorie_counter;
 
 import android.graphics.Typeface;
+import android.inputmethodservice.Keyboard;
+import android.inputmethodservice.KeyboardView;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -20,6 +22,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.jetbrains.annotations.NotNull;
@@ -107,6 +110,7 @@ public class NutritionsFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_nutritions, container, false);
         CaloriesDatabase = new Database(rootView.getContext());
         AutoCompleteTextView auto = (AutoCompleteTextView) rootView.findViewById(R.id.search_txt);
+        TextView itemTitle = (TextView) rootView.findViewById(R.id.itemNameTxt);
         auto.setTypeface(Typeface.DEFAULT,Typeface.ITALIC);
         Items= new ArrayList<>();
         Items=CaloriesDatabase.get_items();
@@ -180,6 +184,13 @@ public class NutritionsFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View arg1, int position, long arg3) {
                 String id =CaloriesDatabase.get_item_id(auto.getText().toString());
+                String tempWord = auto.getText().toString();
+                String charC = tempWord.substring(0,1);
+                charC = charC.toUpperCase();
+                String rest = tempWord.substring(1,tempWord.length());
+                itemTitle.setText("Nutrition facts of 100 grams of " + charC+rest);
+
+//                itemTitle.setText("auto.getText().toString()");
                 OkHttpClient client = new OkHttpClient();
                 String Url = "https://api.spoonacular.com/food/ingredients/"+id +"/information?apiKey=331336ee4d01495083696ea9ef54d599&query="+auto.getText().toString()+"&amount=100&unit=grams";
                 Request request = new Request.Builder()
@@ -222,10 +233,11 @@ public class NutritionsFragment extends Fragment {
                                                 Name=arrobj.getString("title");
                                                 value=arrobj.getDouble("amount");
                                                 unit= arrobj.getString("unit");
-                                                result=Name+ "    "+ value+ "    " + unit+ '\n';
+                                                result=Name+ "    "+ value+ "    " + unit;
                                                 listAdapter.add(result);
                                                 listAdapter.notifyDataSetChanged();
-
+                                                auto.getText().clear();
+                                                userSingleton.hideSoftKeyboard(getActivity());
                                             }
                                         }
                                         responseList.setAdapter(listAdapter);

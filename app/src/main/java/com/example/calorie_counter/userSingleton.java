@@ -1,5 +1,8 @@
 package com.example.calorie_counter;
 
+import android.app.Activity;
+import android.view.inputmethod.InputMethodManager;
+
 public class userSingleton {
     private static int id = 0;
     protected userSingleton() {
@@ -27,5 +30,16 @@ public class userSingleton {
     public static int cal_waterIntake(Double weight)
     {
         return (int) Math.ceil((weight*0.033)*4.227);
+    }
+    public static void hideSoftKeyboard(Activity activity) {
+        InputMethodManager inputMethodManager =
+                (InputMethodManager) activity.getSystemService(
+                        Activity.INPUT_METHOD_SERVICE);
+        if(inputMethodManager.isAcceptingText()){
+            inputMethodManager.hideSoftInputFromWindow(
+                    activity.getCurrentFocus().getWindowToken(),
+                    0
+            );
+        }
     }
 }
