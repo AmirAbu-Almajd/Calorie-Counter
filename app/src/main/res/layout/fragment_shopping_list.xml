@@ -17,7 +17,7 @@
         android:layout_margin="16dp"
         android:src="@mipmap/cart_icon_foreground"
         android:tint="#F8F5F5"
-        app:backgroundTint="#00adb5"
+        app:backgroundTint="#aad8d3"
 
         app:fabSize="normal"
         app:maxImageSize="30dp"
