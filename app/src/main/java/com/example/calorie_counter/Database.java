@@ -20,7 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Database extends SQLiteOpenHelper {
-    private static String databaseName = "CalorieDB16";
+    private static String databaseName = "CalorieDB17";
     SQLiteDatabase calorieDatabase;
 
     public Database(Context context) {

@@ -357,7 +357,7 @@ public class MainMenuFragment extends Fragment {
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
         String currentDate = sdf.format(c);
         LocalDate d = LocalDate.now();
-        date_txt.setText(d.toString());
+        //date_txt.setText(d.toString());
         ////////calorie equation///////////
         calories_tracking(rootView, d);
         //////////////////graph//////////////////////////////
@@ -376,18 +376,20 @@ public class MainMenuFragment extends Fragment {
             }
         });
         /////////////profile transition////////
-        ImageButton profile_btn = rootView.findViewById(R.id.profile_btn);
+
+        /*ImageButton profile_btn = rootView.findViewById(R.id.profile_btn);
         profile_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(rootView.getContext(), profile.class);
                 startActivity(i);
             }
-        });
+        });*/
 
 
         return rootView;
     }
+
 
     public void WriteinDatabase() {
         CaloriesDatabase = new Database(getContext());
@@ -483,11 +485,14 @@ public class MainMenuFragment extends Fragment {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void calories_tracking(View rootView, LocalDate c) {
         db = new Database(getContext());
-        TextView caloriesEqu_txt = rootView.findViewById(R.id.caloriesEqu_txt);
+        TextView caloriesGoal_txt = rootView.findViewById(R.id.caloriesGoal_txt);
+        TextView caloriesRemaining_txt = rootView.findViewById(R.id.caloriesRemaining_txt);
         double daily_calorie_intake = db.get_daily_intake(userSingleton.getId());
         double calories_consumed = db.get_calories_consumed(userSingleton.getId(), c);
         double calories_left = daily_calorie_intake - calories_consumed;
-        caloriesEqu_txt.setText("       " + calories_consumed + "         +         " + calories_left + "         =         " + String.valueOf(daily_calorie_intake));
+        caloriesGoal_txt.setText(daily_calorie_intake+"");
+        caloriesRemaining_txt.setText(calories_left+"");
+        //caloriesEqu_txt.setText("       " + calories_consumed + "         +         " + calories_left + "         =         " + String.valueOf(daily_calorie_intake));
         ////////////////////// progress Bar//////////////////
         ProgressBar simpleProgressBar = (ProgressBar) rootView.findViewById(R.id.progressBar4);
         TextView text = (TextView) rootView.findViewById(R.id.textView4);
