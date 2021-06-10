@@ -131,7 +131,7 @@ public class NutritionsFragment extends Fragment {
                 {
                     Log.e("here","if condition");
                     OkHttpClient client = new OkHttpClient();
-                    String Url = "https://api.spoonacular.com/food/ingredients/autocomplete?apiKey=331336ee4d01495083696ea9ef54d599&query=" + auto.getText() + "&number=10&metaInformation=true&intolerances=bug";
+                    String Url = "https://api.spoonacular.com/food/ingredients/autocomplete?apiKey=56f4af11592a48e5b0441f8d1474ac1e&query=" + auto.getText() + "&number=10&metaInformation=true&intolerances=bug";
                     Request request = new Request.Builder()
                             .url(Url)
                             .addHeader("Content-Type", "application/json")
@@ -192,7 +192,7 @@ public class NutritionsFragment extends Fragment {
 
 //                itemTitle.setText("auto.getText().toString()");
                 OkHttpClient client = new OkHttpClient();
-                String Url = "https://api.spoonacular.com/food/ingredients/"+id +"/information?apiKey=331336ee4d01495083696ea9ef54d599&query="+auto.getText().toString()+"&amount=100&unit=grams";
+                String Url = "https://api.spoonacular.com/food/ingredients/"+id +"/information?apiKey=56f4af11592a48e5b0441f8d1474ac1e&query="+auto.getText().toString()+"&amount=100&unit=grams";
                 Request request = new Request.Builder()
                         .url(Url)
                         .addHeader("Content-Type", "application/json")

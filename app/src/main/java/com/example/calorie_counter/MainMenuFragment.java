@@ -161,7 +161,7 @@ public class MainMenuFragment extends Fragment {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if (adapter.isEmpty()) {
                     OkHttpClient client = new OkHttpClient();
-                    String Url = "https://api.spoonacular.com/food/ingredients/autocomplete?apiKey=331336ee4d01495083696ea9ef54d599&query=" + auto.getText() + "&number=10&metaInformation=true&intolerances=bug";
+                    String Url = "https://api.spoonacular.com/food/ingredients/autocomplete?apiKey=56f4af11592a48e5b0441f8d1474ac1e&query=" + auto.getText() + "&number=10&metaInformation=true&intolerances=bug";
                     Request request = new Request.Builder()
                             .url(Url)
                             .addHeader("Content-Type", "application/json")
@@ -191,7 +191,7 @@ public class MainMenuFragment extends Fragment {
                                                 name = nameObj.getString("name");
                                                 id = nameObj.getString("id");
                                                 CaloriesDatabase.insert_food_item(id, name);
-                                                //Items=CaloriesDatabase.get_items();
+                                                Items=CaloriesDatabase.get_items();
                                                 adapter.add(name);
                                                 //adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_dropdown_item_1line, Items);
                                                 adapter.notifyDataSetChanged();
@@ -212,70 +212,13 @@ public class MainMenuFragment extends Fragment {
 
             }
         });
-        auto.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View arg1, int position, long arg3) {
-                quantity.setHint("how many " + auto.getText() + "s did you eat");
-                CaloriesDatabase = new Database(rootView.getContext());
-                String id = CaloriesDatabase.get_item_id(auto.getText().toString());
-                OkHttpClient client = new OkHttpClient();
-                String Url = "https://api.spoonacular.com/food/ingredients/" + id + "/information?apiKey=331336ee4d01495083696ea9ef54d599&query=" + auto.getText().toString() + "&amount=100&unit=grams";
-                Request request = new Request.Builder()
-                        .url(Url)
-                        .addHeader("Content-Type", "application/json")
-                        .get()
-                        .build();
-                client.newCall(request).enqueue(new Callback() {
-                    @Override
-                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    @Override
-                    public void onResponse(Call call, final Response response) throws IOException {
-                        if (response.isSuccessful()) {
-                            final String myResponse = response.body().string();
-                            getActivity().runOnUiThread(new Runnable() {
-                                @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-                                @Override
-
-                                public void run() {
-                                    CaloriesDatabase = new Database(rootView.getContext());
-                                    try {
-                                        JSONObject rootobj = new JSONObject(myResponse);
-                                        String name = rootobj.getString("name");
-                                        JSONObject innerobj = rootobj.getJSONObject("nutrition");
-                                        JSONArray nutrients = innerobj.getJSONArray("nutrients");
-                                        for (int i = 0; i < nutrients.length(); i++) {
-                                            JSONObject arrobj = nutrients.getJSONObject(i);
-                                            if (arrobj.getString("title").equals("Calories")) {
-                                                calories = arrobj.getInt("amount");
-                                            }
-
-                                        }
-                                        Cals = (double) calories;
-                                        listAdapter.add(String.valueOf(Cals));
-                                        write_to_file(String.valueOf(Cals));
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            });
-                        }
-                    }
-                });
-
-
-            }
-
-        });
         add_meal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 CaloriesDatabase = new Database(rootView.getContext());
                 String id = CaloriesDatabase.get_item_id(auto.getText().toString());
                 OkHttpClient client = new OkHttpClient();
-                String Url = "https://api.spoonacular.com/food/ingredients/" + id + "/information?apiKey=331336ee4d01495083696ea9ef54d599&query=" + auto.getText().toString() + "&amount=100&unit=grams";
+                String Url = "https://api.spoonacular.com/food/ingredients/" + id + "/information?apiKey=56f4af11592a48e5b0441f8d1474ac1e&query=" + auto.getText().toString() + "&amount=100&unit=grams";
                 Request request = new Request.Builder()
                         .url(Url)
                         .addHeader("Content-Type", "application/json")
@@ -332,8 +275,6 @@ public class MainMenuFragment extends Fragment {
                                     }
 
                                     LocalDate dateNow = LocalDate.now();
-                                    double from_file = read_from_file();
-                                    double final_calories = from_file * Double.valueOf(quantity.getText().toString());
                                     CaloriesDatabase.add_meal(userSingleton.getId(), auto.getText().toString(), dateNow, Double.valueOf(quantity.getText().toString()), cals, fats, sugar, carbs, vitamin_c, sodium);
                                     fetch_meals(rootView);
 //                                    int meals_count=CaloriesDatabase.get_meals_count();
@@ -437,50 +378,8 @@ public class MainMenuFragment extends Fragment {
         }
     }
 
-    public void write_to_file(String Cals) {
-        FileOutputStream stream = null;
-        try {
-            stream = getActivity().openFileOutput("calories.txt", 0);
-            stream.write(Cals.getBytes());
-            //stream.write(System.getProperty("line.separator").getBytes());
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
 
-        } finally {
-            if (stream != null) {
-                try {
-                    stream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
 
-                }
-            }
-        }
-    }
-
-    public Double read_from_file() {
-        FileInputStream fileinputstream = null;
-        try {
-            fileinputstream = getActivity().openFileInput("calories.txt");
-            InputStreamReader stream = new InputStreamReader(fileinputstream);
-            BufferedReader br = new BufferedReader(stream);
-            StringBuffer buffer = new StringBuffer();
-            String lines;
-            while ((lines = br.readLine()) != null) {
-                buffer.append(lines);
-            }
-            Double calories = Double.valueOf(buffer.toString());
-            return calories;
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return 0.0;
-    }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void calories_tracking(View rootView, LocalDate c) {
@@ -500,7 +399,6 @@ public class MainMenuFragment extends Fragment {
         String resultingPercentageStr = String.format("%.2f", resultingPercentage);
         simpleProgressBar.setProgress((int) resultingPercentage);
 //        simpleProgressBar.setProgressTintList(ColorStateList.valueOf(0xFF89cff0));
-        Log.e("henaaa",((int) resultingPercentage)+"");
         text.setText(resultingPercentageStr + "%");
     }
 
@@ -523,7 +421,7 @@ public class MainMenuFragment extends Fragment {
             params.setMargins(15, 15, 15, 15);
             params.width = LinearLayout.LayoutParams.MATCH_PARENT;
             TextView listItems = new TextView(rootView.getContext());
-            listItems.setBackgroundColor(0xFF89cff0);
+            listItems.setBackgroundColor(0xFFdddddd);
             listItems.setPadding(15, 15, 15, 15);
             listItems.setLayoutParams(params);
             listItems.setId(textViewsIds + 3000);
